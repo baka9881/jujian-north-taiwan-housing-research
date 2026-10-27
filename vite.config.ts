@@ -44,6 +44,8 @@ export default defineConfig(async () => {
   const { cloudflare } = await import("@cloudflare/vite-plugin");
 
   return {
+    // An isolated build can disable output cleanup when files must be retained.
+    ...(process.env.JUJIAN_SAFE_BUILD === "1" ? { cacheDir: ".vite-safe-cache", build: { emptyOutDir: false } } : {}),
     server: isCodexSeatbeltSandbox
       ? { watch: { useFsEvents: false, usePolling: true } }
       : undefined,

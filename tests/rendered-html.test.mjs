@@ -27,7 +27,10 @@ test("opens with scannable project results and a compact result toolbar", async 
   assert.ok(html.includes(String(catalogueSize)));
   assert.match(html, /全部建案/);
   assert.match(html, /aria-label="搜尋結果"/);
-  assert.match(html, /北台灣建案/);
+  assert.match(html, /北台灣(?:<!-- -->)?歷史建案備查/);
+  assert.match(html, /找目前刊登的房屋/);
+  assert.match(html, /僅涵蓋信義房屋/);
+  assert.match(html, /Taipei-city\/presale\/default-desc\/1/);
   assert.equal((html.match(/class="project-grid-card"/g) || []).length, 24);
   assert.match(html, /aria-label="建案列表分頁"/);
   assert.doesNotMatch(html, /class="project-placeholder"/);

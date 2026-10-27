@@ -215,6 +215,37 @@ type Project = RawProject & {
   quality: ProjectQuality;
 };
 
+const listingCities = [
+  { label: "臺北市", code: "Taipei-city" },
+  { label: "新北市", code: "NewTaipei-city" },
+  { label: "桃園市", code: "Taoyuan-city" },
+  { label: "新竹市", code: "Hsinchu-city" },
+  { label: "新竹縣", code: "Hsinchu-county" },
+] as const;
+
+function ForSaleSearch() {
+  const [cityCode, setCityCode] = useState<string>(listingCities[0].code);
+  const [listingType, setListingType] = useState<"new-listings" | "resale-listings">("new-listings");
+  const suffix = listingType === "new-listings"
+    ? "presale/default-desc/1"
+    : "dalou-type/0-5-year/102-tags/resale/default-desc/1";
+  const url = `https://www.sinyi.com.tw/buy/list/${cityCode}/${suffix}`;
+
+  return <section className="for-sale-search" aria-labelledby="for-sale-heading">
+    <div className="for-sale-intro">
+      <span>房源搜尋</span>
+      <h2 id="for-sale-heading">找目前刊登的房屋</h2>
+      <p>前往信義房屋搜尋預售屋或屋齡 5 年內的電梯大樓中古屋。</p>
+    </div>
+    <div className="for-sale-controls">
+      <label><span>縣市</span><select value={cityCode} onChange={(event) => setCityCode(event.target.value)} aria-label="在售房源縣市">{listingCities.map((city) => <option key={city.code} value={city.code}>{city.label}</option>)}</select></label>
+      <label><span>房屋類型</span><select value={listingType} onChange={(event) => setListingType(event.target.value as "new-listings" | "resale-listings")} aria-label="在售房源類型"><option value="new-listings">預售屋</option><option value="resale-listings">5 年內電梯大樓中古屋</option></select></label>
+      <a href={url} target="_blank" rel="noopener noreferrer">前往信義房屋搜尋 ↗</a>
+    </div>
+    <p className="for-sale-note">房源由外站提供，僅涵蓋信義房屋；刊登狀態、用途、屋齡及電梯條件請至外站逐筆確認。本頁下方為歷史建案備查，並非在售清單。</p>
+  </section>;
+}
+
 type ViewMode = "map" | "list";
 type DetailTab = "summary" | "builder" | "price" | "cost" | "quality" | "amenity";
 type SortKey = "newest" | "priceLow" | "priceHigh" | "households" | "quality";
@@ -835,7 +866,7 @@ export default function Home() {
         </a>
         <span className="site-area-label">桃園・新竹・雙北</span>
         <div className="header-tools">
-          <span><i />預售建案備查 {projects.length} 案</span>
+          <span><i />歷史建案備查 {projects.length} 案</span>
           <button type="button" onClick={() => setMethodOpen(true)}>資料說明</button>
         </div>
       </header>
@@ -851,6 +882,8 @@ export default function Home() {
         </button>
         {viewMode === "map" && <><div className="map-toolbar-result" aria-live="polite"><strong>{filtered.length.toLocaleString("zh-TW")}</strong><span>案</span></div><button type="button" className="map-toolbar-list" onClick={() => switchView("list")}><InterfaceIcon name="list" />列表</button></>}
       </section>
+
+      {viewMode === "list" && <ForSaleSearch />}
 
       {advancedFiltersOpen && <>
         <button type="button" className="filter-backdrop" aria-label="關閉篩選" onClick={() => setAdvancedFiltersOpen(false)} />
@@ -878,7 +911,7 @@ export default function Home() {
       </>}
 
       {viewMode === "list" && <section className="results-toolbar" aria-label="搜尋結果">
-        <div className="results-summary"><h1>{scopeTitle}建案</h1><p><strong>{filtered.length.toLocaleString("zh-TW")}</strong> 個結果 <span>{pricedCount.toLocaleString("zh-TW")} 案有成交資料</span></p></div>
+        <div className="results-summary"><h1>{scopeTitle}歷史建案備查</h1><p><strong>{filtered.length.toLocaleString("zh-TW")}</strong> 個結果 <span>{pricedCount.toLocaleString("zh-TW")} 案有成交資料</span></p></div>
         <div className="results-actions">
           <label className="sort-control"><span>排序</span><select aria-label="建案排序" value={sortBy} onChange={(event) => setSortBy(event.target.value as SortKey)}><option value="newest">最新備查</option><option value="priceLow">單價低到高</option><option value="priceHigh">單價高到低</option><option value="households">戶數多到少</option><option value="quality">品質查核結果</option></select></label>
           <div className="view-switch" aria-label="檢視模式">
