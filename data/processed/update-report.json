@@ -1,875 +1,1209 @@
 {
-  "generatedAt": "2026-07-14",
-  "status": "ok",
+  "generatedAt": "2026-09-20",
+  "status": "attention",
   "summary": {
-    "officialEligibleCount": 117,
-    "catalogueBefore": 42,
-    "catalogueAfter": 42,
-    "autoAddedCount": 0,
-    "updatedExistingCount": 0,
-    "ambiguousCount": 0,
-    "missingFromCurrentSourceCount": 0,
-    "historicalBacklogCount": 75
+    "officialEligibleCount": 2322,
+    "catalogueBefore": 2299,
+    "catalogueAfter": 2304,
+    "autoAddedCount": 5,
+    "updatedExistingCount": 17,
+    "ambiguousCount": 22,
+    "missingFromCurrentSourceCount": 4,
+    "historicalBacklogCount": 0
   },
   "safeguards": [
-    "新案必須晚於該區目前最新申報日才會自動加入",
+    "舊案、同日補登、小型住宅建案均納入；僅身分歧義或缺乏識別資料時待核對",
     "既有建案不會因本期來源暫時缺少而刪除",
     "多重匹配或身分歧義不會自動覆蓋",
     "人工確認的定位與品質事件由後續流程保留"
   ],
   "changes": {
-    "added": [],
-    "updated": [],
-    "ambiguous": [],
-    "missing": []
+    "added": [
+      {
+        "sourceKey": "桃園其他:permit:113桃市都建執照字第會屋0459號",
+        "city": "桃園市",
+        "district": "新屋區",
+        "name": "成莊成家N0.2",
+        "region": "桃園其他",
+        "builder": "成莊廣告有限公司",
+        "households": 29,
+        "declaredDate": "2025-10-20",
+        "address": "保安路一 段177巷",
+        "buildingLand": "新屋段後湖小段771地號",
+        "permitNo": "(113)桃市都建執照字第會屋0459號",
+        "sourceIntegrity": {
+          "status": "repaired-unquoted-commas",
+          "extraColumnCount": 1,
+          "note": "官方 CSV 文字欄含未引用逗號；依固定尾欄、有效申報日期與括號邊界復位。"
+        }
+      },
+      {
+        "sourceKey": "桃園其他:registry:QPPNMLRJRHIGFDH56CG",
+        "city": "桃園市",
+        "district": "龍潭區",
+        "name": "承崴綻II",
+        "region": "桃園其他",
+        "builder": "承崴建設有限公司",
+        "households": 9,
+        "declaredDate": "2023-09-07",
+        "address": "干城路",
+        "buildingLand": "干城段944地號",
+        "permitNo": "112桃市都建執照字第會龍00847號",
+        "sourceIntegrity": {
+          "status": "repaired-unquoted-commas",
+          "extraColumnCount": 1,
+          "note": "官方 CSV 文字欄含未引用逗號；依固定尾欄、有效申報日期與括號邊界復位。"
+        }
+      },
+      {
+        "sourceKey": "桃園其他:registry:QPPNMLRLRHHGFDH66CG",
+        "city": "桃園市",
+        "district": "大溪區",
+        "name": "家那大17期A區",
+        "region": "桃園其他",
+        "builder": "家郡建設有限公司， 家那大建設有限公司",
+        "households": 27,
+        "declaredDate": "2022-09-27",
+        "address": "員林路二段282巷旁",
+        "buildingLand": "員林段179-5地號",
+        "permitNo": "110桃市都建執照字第會溪01314-1",
+        "sourceIntegrity": {
+          "status": "repaired-unquoted-commas",
+          "extraColumnCount": 1,
+          "note": "官方 CSV 文字欄含未引用逗號；依固定尾欄、有效申報日期與括號邊界復位。"
+        }
+      },
+      {
+        "sourceKey": "臺北市:registry:UPPNMLTLPHHGFDA09DG",
+        "city": "臺北市",
+        "district": "大同區",
+        "name": "麗盛南京",
+        "region": "臺北市",
+        "builder": "良昱建設股份有限公司",
+        "households": 51,
+        "declaredDate": "2022-07-29",
+        "address": "玉泉里南京西路446號",
+        "buildingLand": "玉泉段二小段565地號",
+        "permitNo": "107建字第0077號",
+        "sourceIntegrity": {
+          "status": "repaired-unquoted-commas",
+          "extraColumnCount": 1,
+          "note": "官方 CSV 文字欄含未引用逗號；依固定尾欄、有效申報日期與括號邊界復位。"
+        }
+      },
+      {
+        "sourceKey": "新竹縣:registry:QPPNMLQLNHHGFDJ98CG",
+        "city": "新竹縣",
+        "district": "新豐鄉",
+        "name": "天空大院 2",
+        "region": "新竹縣",
+        "builder": "緯懋建設有限公司",
+        "households": 10,
+        "declaredDate": "2022-05-26",
+        "address": "新豐村9鄰243號旁",
+        "buildingLand": "池和段986地號",
+        "permitNo": "(110)府建字第00461號",
+        "sourceIntegrity": {
+          "status": "repaired-unquoted-commas",
+          "extraColumnCount": 1,
+          "note": "官方 CSV 文字欄含未引用逗號；依固定尾欄、有效申報日期與括號邊界復位。"
+        }
+      }
+    ],
+    "updated": [
+      {
+        "id": "taoyuan-23e777b6ba",
+        "name": "國岩琚",
+        "region": "桃園其他",
+        "changes": {
+          "buildingLand": {
+            "before": "代銷不接蛋白區個案",
+            "after": "下田心子段員笨小段1736地號"
+          },
+          "permitDate": {
+            "before": null,
+            "after": "2025-01-02"
+          },
+          "permitNo": {
+            "before": "下田心子段員笨小段1736地號",
+            "after": "113桃市都建執照字第會屋01692號"
+          },
+          "firstRegistrationDate": {
+            "before": "2025-01-02",
+            "after": null
+          },
+          "registryNumber": {
+            "before": "113桃市都建執照字第會屋01692號",
+            "after": "QPTNMLRKJHKGFDH56DG"
+          },
+          "sourceIntegrity": {
+            "before": null,
+            "after": {
+              "status": "repaired-unquoted-commas",
+              "extraColumnCount": 2,
+              "note": "官方 CSV 文字欄含未引用逗號；依固定尾欄、有效申報日期與括號邊界復位。"
+            }
+          }
+        }
+      },
+      {
+        "id": "taoyuan-11707fe20f",
+        "name": "昭揚天鉅",
+        "region": "桃園其他",
+        "changes": {
+          "mainUse": {
+            "before": "住宅區(再發展區）",
+            "after": "住宅區(再發展區）,Ｇ3店鋪Ｈ2集合住宅"
+          },
+          "material": {
+            "before": "Ｇ3店鋪Ｈ2集合住宅",
+            "after": "鋼筋混凝土造"
+          },
+          "buildingLand": {
+            "before": "自售:無;代銷:1131023~;",
+            "after": "明智段11地號"
+          },
+          "declaredDate": {
+            "before": null,
+            "after": "2024-10-23"
+          },
+          "permitDate": {
+            "before": null,
+            "after": "2024-10-21"
+          },
+          "permitNo": {
+            "before": "1131021",
+            "after": "(113)桃市都建執照字第會德1169號"
+          },
+          "registryNumber": {
+            "before": "未提供",
+            "after": "QPQNMLNLIIJGFDH48DG"
+          },
+          "sourceIntegrity": {
+            "before": null,
+            "after": {
+              "status": "repaired-unquoted-commas",
+              "extraColumnCount": 1,
+              "note": "官方 CSV 文字欄含未引用逗號；依固定尾欄、有效申報日期與括號邊界復位。"
+            }
+          }
+        }
+      },
+      {
+        "id": "new-taipei-0af0a08db8",
+        "name": "富霖富鄰",
+        "region": "新北其他",
+        "changes": {
+          "buildingLand": {
+            "before": "至全案售罄;",
+            "after": "永吉段570地號"
+          },
+          "permitDate": {
+            "before": null,
+            "after": "2023-07-14"
+          },
+          "permitNo": {
+            "before": "1120714",
+            "after": "112鶯建字第00240號"
+          },
+          "sourceIntegrity": {
+            "before": null,
+            "after": {
+              "status": "repaired-unquoted-commas",
+              "extraColumnCount": 1,
+              "note": "官方 CSV 文字欄含未引用逗號；依固定尾欄、有效申報日期與括號邊界復位。"
+            }
+          }
+        }
+      },
+      {
+        "id": "taoyuan-c33190e3b9",
+        "name": "鼎藏青溪",
+        "region": "桃園其他",
+        "changes": {
+          "buildingLand": {
+            "before": "屆期如有未售戶",
+            "after": "五塊厝段下埔小段1417地號"
+          },
+          "permitDate": {
+            "before": null,
+            "after": "2023-10-25"
+          },
+          "permitNo": {
+            "before": "五塊厝段下埔小段1417地號",
+            "after": "112桃市都建執照字第會園1063號"
+          },
+          "firstRegistrationDate": {
+            "before": "2023-10-25",
+            "after": null
+          },
+          "registryNumber": {
+            "before": "112桃市都建執照字第會園1063號",
+            "after": "未提供"
+          },
+          "sourceIntegrity": {
+            "before": null,
+            "after": {
+              "status": "repaired-unquoted-commas",
+              "extraColumnCount": 2,
+              "note": "官方 CSV 文字欄含未引用逗號；依固定尾欄、有效申報日期與括號邊界復位。"
+            }
+          }
+        }
+      },
+      {
+        "id": "taoyuan-f4623e3466",
+        "name": "詠勝文青",
+        "region": "桃園其他",
+        "changes": {
+          "buildingLand": {
+            "before": "五月開始參與規劃及事前準備;",
+            "after": "青溪段510地號"
+          },
+          "permitDate": {
+            "before": null,
+            "after": "2023-08-09"
+          },
+          "permitNo": {
+            "before": "1120809",
+            "after": "桃市都建執照字會壢00529-02"
+          },
+          "registryNumber": {
+            "before": "未提供",
+            "after": "TPSNMLPJIIIGFDH88DG"
+          },
+          "sourceIntegrity": {
+            "before": null,
+            "after": {
+              "status": "repaired-unquoted-commas",
+              "extraColumnCount": 1,
+              "note": "官方 CSV 文字欄含未引用逗號；依固定尾欄、有效申報日期與括號邊界復位。"
+            }
+          }
+        }
+      },
+      {
+        "id": "taoyuan-e4c57580e2",
+        "name": "大誼晨峰",
+        "region": "桃園其他",
+        "changes": {
+          "buildingLand": {
+            "before": "及接待中心搭建完成後的12個月;",
+            "after": "大牛欄段後湖小段309地號"
+          },
+          "permitDate": {
+            "before": null,
+            "after": "2023-01-03"
+          },
+          "permitNo": {
+            "before": "1120103",
+            "after": "111桃市都建執照字第會屋01441號"
+          },
+          "firstRegistrationDate": {
+            "before": null,
+            "after": "2024-11-05"
+          },
+          "registryNumber": {
+            "before": "1131105",
+            "after": "SPPNMLLJNHIGFDH38CG"
+          },
+          "sourceIntegrity": {
+            "before": null,
+            "after": {
+              "status": "repaired-unquoted-commas",
+              "extraColumnCount": 1,
+              "note": "官方 CSV 文字欄含未引用逗號；依固定尾欄、有效申報日期與括號邊界復位。"
+            }
+          }
+        }
+      },
+      {
+        "id": "hsinchu-county-5e663a9abc",
+        "name": "坤玥居",
+        "region": "新竹縣",
+        "changes": {
+          "buildingLand": {
+            "before": "同步委託代銷銷售;代銷:1110929~1121031;與自售併同銷售",
+            "after": "下山段下山小段18-12地號"
+          },
+          "permitDate": {
+            "before": null,
+            "after": "2022-05-23"
+          },
+          "permitNo": {
+            "before": "下山段下山小段18-12地號",
+            "after": "(111)府建字第00239號"
+          },
+          "firstRegistrationDate": {
+            "before": "2022-05-23",
+            "after": "2025-08-22"
+          },
+          "registryNumber": {
+            "before": "(111)府建字第00239號",
+            "after": "未提供"
+          },
+          "sourceIntegrity": {
+            "before": null,
+            "after": {
+              "status": "repaired-unquoted-commas",
+              "extraColumnCount": 2,
+              "note": "官方 CSV 文字欄含未引用逗號；依固定尾欄、有效申報日期與括號邊界復位。"
+            }
+          }
+        }
+      },
+      {
+        "id": "taoyuan-b54f7c56c7",
+        "name": "閤林苑",
+        "region": "桃園其他",
+        "changes": {
+          "buildingLand": {
+            "before": "至全案完銷;",
+            "after": "內海墘段387-5地號"
+          },
+          "permitDate": {
+            "before": null,
+            "after": "2022-09-16"
+          },
+          "permitNo": {
+            "before": "1110916",
+            "after": "桃市都建執照字第會園01182-01號"
+          },
+          "firstRegistrationDate": {
+            "before": null,
+            "after": "2024-03-20"
+          },
+          "registryNumber": {
+            "before": "1130320",
+            "after": "未提供"
+          },
+          "sourceIntegrity": {
+            "before": null,
+            "after": {
+              "status": "repaired-unquoted-commas",
+              "extraColumnCount": 1,
+              "note": "官方 CSV 文字欄含未引用逗號；依固定尾欄、有效申報日期與括號邊界復位。"
+            }
+          }
+        }
+      },
+      {
+        "id": "new-taipei-c981c85b0e",
+        "name": "華鋐晴朗",
+        "region": "新北其他",
+        "changes": {
+          "buildingLand": {
+            "before": "預計約8個月.;",
+            "after": "安平段813地號"
+          },
+          "permitDate": {
+            "before": null,
+            "after": "2021-10-18"
+          },
+          "permitNo": {
+            "before": "1101018",
+            "after": "107中建字第00399-01號"
+          },
+          "registryNumber": {
+            "before": "未提供",
+            "after": "SPPNMLNKNHHGFHF88DG"
+          },
+          "sourceIntegrity": {
+            "before": null,
+            "after": {
+              "status": "repaired-unquoted-commas",
+              "extraColumnCount": 1,
+              "note": "官方 CSV 文字欄含未引用逗號；依固定尾欄、有效申報日期與括號邊界復位。"
+            }
+          }
+        }
+      },
+      {
+        "id": "new-taipei-a83ea3cd4f",
+        "name": "川琦",
+        "region": "新北其他",
+        "changes": {
+          "buildingLand": {
+            "before": "銷售至使用執照核發後六個月;",
+            "after": "板翠段19地號"
+          },
+          "permitDate": {
+            "before": null,
+            "after": "2021-12-30"
+          },
+          "permitNo": {
+            "before": "1101230",
+            "after": "110板建字第00647號"
+          },
+          "registryNumber": {
+            "before": "未提供",
+            "after": "SPPNMLSJLHHGFAF28CG"
+          },
+          "sourceIntegrity": {
+            "before": null,
+            "after": {
+              "status": "repaired-unquoted-commas",
+              "extraColumnCount": 1,
+              "note": "官方 CSV 文字欄含未引用逗號；依固定尾欄、有效申報日期與括號邊界復位。"
+            }
+          }
+        }
+      },
+      {
+        "id": "new-taipei-40d5f0877c",
+        "name": "捷韻富境",
+        "region": "新北其他",
+        "changes": {
+          "buildingLand": {
+            "before": "至使用執照核發後六個月終止;",
+            "after": "南靖段211地號"
+          },
+          "permitDate": {
+            "before": null,
+            "after": "2020-09-25"
+          },
+          "permitNo": {
+            "before": "1090925",
+            "after": "(109)鶯建字第00416號"
+          },
+          "firstRegistrationDate": {
+            "before": null,
+            "after": "2023-02-23"
+          },
+          "registryNumber": {
+            "before": "1120223",
+            "after": "未提供"
+          },
+          "sourceIntegrity": {
+            "before": null,
+            "after": {
+              "status": "repaired-unquoted-commas",
+              "extraColumnCount": 1,
+              "note": "官方 CSV 文字欄含未引用逗號；依固定尾欄、有效申報日期與括號邊界復位。"
+            }
+          }
+        }
+      },
+      {
+        "id": "hsinchu-county-bf14854003",
+        "name": "綠光森林29馥御文昌",
+        "region": "新竹縣",
+        "changes": {
+          "mainUse": {
+            "before": "第二種住宅區",
+            "after": "第二種住宅區,住家用、商業用、住商用"
+          },
+          "material": {
+            "before": "住家用、商業用、住商用",
+            "after": "鋼筋混凝土造"
+          },
+          "buildingLand": {
+            "before": "自售:1110201~1121231;",
+            "after": "文昌段343地號"
+          },
+          "declaredDate": {
+            "before": null,
+            "after": "2021-12-14"
+          },
+          "permitDate": {
+            "before": null,
+            "after": "2021-04-09"
+          },
+          "permitNo": {
+            "before": "1100409",
+            "after": "(110)府建字第00165號"
+          },
+          "firstRegistrationDate": {
+            "before": null,
+            "after": "2024-04-18"
+          },
+          "registryNumber": {
+            "before": "1130418",
+            "after": "QPPNMLOKKIGGFCJ28CG"
+          },
+          "sourceIntegrity": {
+            "before": null,
+            "after": {
+              "status": "repaired-unquoted-commas",
+              "extraColumnCount": 1,
+              "note": "官方 CSV 文字欄含未引用逗號；依固定尾欄、有效申報日期與括號邊界復位。"
+            }
+          }
+        }
+      },
+      {
+        "id": "new-taipei-1213fafd80",
+        "name": "集英富琚",
+        "region": "新北其他",
+        "changes": {
+          "buildingLand": {
+            "before": "預計111年1月申請使照;",
+            "after": "富貴段695地號"
+          },
+          "permitDate": {
+            "before": null,
+            "after": "2019-09-13"
+          },
+          "permitNo": {
+            "before": "1080913",
+            "after": "108重建字第00088-01"
+          },
+          "firstRegistrationDate": {
+            "before": null,
+            "after": "2022-07-28"
+          },
+          "registryNumber": {
+            "before": "1110728",
+            "after": "QPPNMLRJKIGGFGF58DG"
+          },
+          "sourceIntegrity": {
+            "before": null,
+            "after": {
+              "status": "repaired-unquoted-commas",
+              "extraColumnCount": 1,
+              "note": "官方 CSV 文字欄含未引用逗號；依固定尾欄、有效申報日期與括號邊界復位。"
+            }
+          }
+        }
+      },
+      {
+        "id": "new-taipei-8458159612",
+        "name": "華鋐晴晨",
+        "region": "新北其他",
+        "changes": {
+          "buildingLand": {
+            "before": "預計約8個月;",
+            "after": "安平段1090地號"
+          },
+          "permitDate": {
+            "before": null,
+            "after": "2021-07-16"
+          },
+          "permitNo": {
+            "before": "1100716",
+            "after": "106中建字第00321-02號"
+          },
+          "registryNumber": {
+            "before": "未提供",
+            "after": "TPPNMLRKJIGGFHF98DG"
+          },
+          "sourceIntegrity": {
+            "before": null,
+            "after": {
+              "status": "repaired-unquoted-commas",
+              "extraColumnCount": 1,
+              "note": "官方 CSV 文字欄含未引用逗號；依固定尾欄、有效申報日期與括號邊界復位。"
+            }
+          }
+        }
+      },
+      {
+        "id": "new-taipei-f3a36ff1d6",
+        "name": "詠大賞",
+        "region": "新北其他",
+        "changes": {
+          "buildingLand": {
+            "before": "110年10月7日建照才核發;",
+            "after": "及人段463地號"
+          },
+          "permitDate": {
+            "before": null,
+            "after": "2021-10-07"
+          },
+          "permitNo": {
+            "before": "1101007",
+            "after": "110永建字第00490號"
+          },
+          "firstRegistrationDate": {
+            "before": null,
+            "after": "2025-10-30"
+          },
+          "registryNumber": {
+            "before": "1141030",
+            "after": "QPPNMLMLIIGGFHF18DG"
+          },
+          "sourceIntegrity": {
+            "before": null,
+            "after": {
+              "status": "repaired-unquoted-commas",
+              "extraColumnCount": 1,
+              "note": "官方 CSV 文字欄含未引用逗號；依固定尾欄、有效申報日期與括號邊界復位。"
+            }
+          }
+        }
+      },
+      {
+        "id": "hsinchu-county-20c8bc898a",
+        "name": "鑫藝墅",
+        "region": "新竹縣",
+        "changes": {
+          "buildingLand": {
+            "before": "開始自售;",
+            "after": "縣愛段74地號"
+          },
+          "permitDate": {
+            "before": null,
+            "after": "2021-05-06"
+          },
+          "permitNo": {
+            "before": "1100506",
+            "after": "(110)府建字第00210號"
+          },
+          "firstRegistrationDate": {
+            "before": null,
+            "after": "2023-04-14"
+          },
+          "registryNumber": {
+            "before": "1120414",
+            "after": "QPPNMLQJQHGGFBJ78CG"
+          },
+          "sourceIntegrity": {
+            "before": null,
+            "after": {
+              "status": "repaired-unquoted-commas",
+              "extraColumnCount": 1,
+              "note": "官方 CSV 文字欄含未引用逗號；依固定尾欄、有效申報日期與括號邊界復位。"
+            }
+          }
+        }
+      },
+      {
+        "id": "taipei-c5fa475b72",
+        "name": "達永豐盛學",
+        "region": "臺北市",
+        "changes": {
+          "buildingLand": {
+            "before": "以取得建照日起九個月為銷售期;",
+            "after": "大業段一小段401地號"
+          },
+          "permitDate": {
+            "before": null,
+            "after": "2021-07-09"
+          },
+          "permitNo": {
+            "before": "1100709",
+            "after": "110建字第0172號"
+          },
+          "registryNumber": {
+            "before": "未提供",
+            "after": "SPPNMLOKPHGGFDA18DG"
+          },
+          "sourceIntegrity": {
+            "before": null,
+            "after": {
+              "status": "repaired-unquoted-commas",
+              "extraColumnCount": 1,
+              "note": "官方 CSV 文字欄含未引用逗號；依固定尾欄、有效申報日期與括號邊界復位。"
+            }
+          }
+        }
+      }
+    ],
+    "ambiguous": [
+      {
+        "sourceKey": "新北其他:fallback:大亮攸煦YOSHI:未提供",
+        "city": "新北市",
+        "district": "新莊區",
+        "name": "大亮攸煦YOSHI",
+        "region": "新北其他",
+        "builder": "大亮建築股份有限公司",
+        "households": 44,
+        "declaredDate": "2025-06-27",
+        "address": "福德一街66號旁",
+        "buildingLand": "未提供",
+        "permitNo": "未提供",
+        "sourceIntegrity": null,
+        "reason": "缺少備查編號、建照及基地，無法安全辨識"
+      },
+      {
+        "sourceKey": "桃園其他:fallback:曄龍聚光:未提供",
+        "city": "桃園市",
+        "district": "觀音區",
+        "name": "曄龍聚光",
+        "region": "桃園其他",
+        "builder": "曄龍建設有限公司:莊哲豪",
+        "households": 28,
+        "declaredDate": "2024-11-01",
+        "address": "保障路與莊敬二街交叉口附近",
+        "buildingLand": "未提供",
+        "permitNo": "未提供",
+        "sourceIntegrity": null,
+        "reason": "缺少備查編號、建照及基地，無法安全辨識"
+      },
+      {
+        "sourceKey": "桃園其他:fallback:川洋青勻:未提供",
+        "city": "桃園市",
+        "district": "大園區",
+        "name": "川洋青勻",
+        "region": "桃園其他",
+        "builder": "川洋建設有限公司",
+        "households": 35,
+        "declaredDate": "2024-06-11",
+        "address": "中興路一段116巷121號之旁 等",
+        "buildingLand": "未提供",
+        "permitNo": "未提供",
+        "sourceIntegrity": null,
+        "reason": "缺少備查編號、建照及基地，無法安全辨識"
+      },
+      {
+        "sourceKey": "桃園其他:permit:桃市都建執照字第會龜0150201號",
+        "city": "桃園市",
+        "district": "龜山區",
+        "name": "大坪林嵩賦",
+        "region": "桃園其他",
+        "builder": "臺億建築經理股份有限公司",
+        "households": 97,
+        "declaredDate": "2024-03-07",
+        "address": "桃園市龜山區東萬壽路西側",
+        "buildingLand": "塔寮坑段837地號",
+        "permitNo": "桃市都建執照字第會龜01502-01號",
+        "sourceIntegrity": null,
+        "reason": "來源身分重複，需人工核對"
+      },
+      {
+        "sourceKey": "新北其他:fallback:香寓:未提供",
+        "city": "新北市",
+        "district": "五股區",
+        "name": "香寓",
+        "region": "新北其他",
+        "builder": "仙都建設有限公司",
+        "households": 70,
+        "declaredDate": "2024-01-26",
+        "address": "新城八路",
+        "buildingLand": "未提供",
+        "permitNo": "未提供",
+        "sourceIntegrity": null,
+        "reason": "缺少備查編號、建照及基地，無法安全辨識"
+      },
+      {
+        "sourceKey": "新北其他:fallback:蒔光:未提供",
+        "city": "新北市",
+        "district": "五股區",
+        "name": "蒔光",
+        "region": "新北其他",
+        "builder": "三多立建設開發股份有限公司",
+        "households": 47,
+        "declaredDate": "2024-01-26",
+        "address": "新城八路",
+        "buildingLand": "未提供",
+        "permitNo": "未提供",
+        "sourceIntegrity": null,
+        "reason": "缺少備查編號、建照及基地，無法安全辨識"
+      },
+      {
+        "sourceKey": "桃園其他:permit:桃市都建執照字第會觀00420號",
+        "city": "桃園市",
+        "district": "觀音區",
+        "name": "米蘭晶鑽NO.5",
+        "region": "桃園其他",
+        "builder": "合旺建設有限公司",
+        "households": 21,
+        "declaredDate": "2024-01-24",
+        "address": "新村路二段28號旁",
+        "buildingLand": "忠孝段958地號",
+        "permitNo": "桃市都建執照字第會觀00420號",
+        "sourceIntegrity": null,
+        "reason": "來源身分重複，需人工核對"
+      },
+      {
+        "sourceKey": "林口:registry:QPPNMLPJJHJGFBF97DG",
+        "city": "新北市",
+        "district": "林口區",
+        "name": "亞昕森匯·天匯(森匯)",
+        "region": "林口",
+        "builder": "亞昕國際開發股份有限公司及益昕投資股份有限公司",
+        "households": 364,
+        "declaredDate": "2024-01-05",
+        "address": "信義路與吉祥路交叉口",
+        "buildingLand": "力行段174地號",
+        "permitNo": "112林建字第00453號",
+        "sourceIntegrity": null,
+        "matchedIds": [
+          "linkou-aa5babc575"
+        ],
+        "reason": "備查編號、建照、名稱或基地變更，需人工核對"
+      },
+      {
+        "sourceKey": "新北其他:fallback:喜福匯六:未提供",
+        "city": "新北市",
+        "district": "蘆洲區",
+        "name": "喜福匯六期",
+        "region": "新北其他",
+        "builder": "祥旭龍實業有限公司",
+        "households": 58,
+        "declaredDate": "2023-11-09",
+        "address": "三民路483~493號",
+        "buildingLand": "未提供",
+        "permitNo": "未提供",
+        "sourceIntegrity": null,
+        "reason": "缺少備查編號、建照及基地，無法安全辨識"
+      },
+      {
+        "sourceKey": "新北其他:permit:110泰建字第004803號",
+        "city": "新北市",
+        "district": "泰山區",
+        "name": "新潤 THE RICH",
+        "region": "新北其他",
+        "builder": "新潤建設股份有限公司",
+        "households": 199,
+        "declaredDate": "2023-02-03",
+        "address": "新北大道五段與幸福路口",
+        "buildingLand": "新泰段18地號",
+        "permitNo": "110泰建字第00480-3號",
+        "sourceIntegrity": null,
+        "reason": "來源身分重複，需人工核對"
+      },
+      {
+        "sourceKey": "桃園其他:permit:桃市都建執照字第會壢00910號",
+        "city": "桃園市",
+        "district": "中壢區",
+        "name": "青城之愛3",
+        "region": "桃園其他",
+        "builder": "豐和邦建設有限公司",
+        "households": 99,
+        "declaredDate": "2022-09-12",
+        "address": "圓光路二段283巷42弄1號對面",
+        "buildingLand": "山上段96-1地號",
+        "permitNo": "桃市都建執照字第會壢00910號",
+        "sourceIntegrity": null,
+        "reason": "來源身分重複，需人工核對"
+      },
+      {
+        "sourceKey": "新北其他:registry:RPPNMLSKQHHGFAF78CG",
+        "city": "新北市",
+        "district": "土城區",
+        "name": "馥華之丘-光茵",
+        "region": "新北其他",
+        "builder": "欣羽股份有限公司",
+        "households": 362,
+        "declaredDate": "2022-08-18",
+        "address": "青福街青隆街口",
+        "buildingLand": "明德段240地號",
+        "permitNo": "111土建字第00335號",
+        "sourceIntegrity": null,
+        "matchedIds": [
+          "new-taipei-4e05c9a737"
+        ],
+        "reason": "備查編號、建照、名稱或基地變更，需人工核對"
+      },
+      {
+        "sourceKey": "新北其他:fallback:華鋐晴光:未提供",
+        "city": "新北市",
+        "district": "汐止區",
+        "name": "華鋐晴光",
+        "region": "新北其他",
+        "builder": "華鋐企業股份有限公司",
+        "households": 38,
+        "declaredDate": "2022-07-14",
+        "address": "樟樹一路266號",
+        "buildingLand": "未提供",
+        "permitNo": "未提供",
+        "sourceIntegrity": null,
+        "reason": "缺少備查編號、建照及基地，無法安全辨識"
+      },
+      {
+        "sourceKey": "新北其他:registry:TPRNMLPKKHHGFBF48DG",
+        "city": "新北市",
+        "district": "新莊區",
+        "name": "亞昕森中央",
+        "region": "新北其他",
+        "builder": "亞昕國際開發股份有限公司",
+        "households": 339,
+        "declaredDate": "2022-02-15",
+        "address": "富貴路與昌仁路交接口",
+        "buildingLand": "副都心段一小段59地號",
+        "permitNo": "111莊建字第00057號",
+        "sourceIntegrity": null,
+        "matchedIds": [
+          "new-taipei-426a882fc5"
+        ],
+        "reason": "備查編號、建照、名稱或基地變更，需人工核對"
+      },
+      {
+        "sourceKey": "新北其他:registry:QPQNMLKKKHHGFBF57DG",
+        "city": "新北市",
+        "district": "新莊區",
+        "name": "長虹 PARK 32",
+        "region": "新北其他",
+        "builder": "僑馥建築經理股份有限公司",
+        "households": 352,
+        "declaredDate": "2022-02-10",
+        "address": "福美街",
+        "buildingLand": "中原段148地號",
+        "permitNo": "102莊建字第366-2號",
+        "sourceIntegrity": null,
+        "matchedIds": [
+          "new-taipei-2fd02eefaf"
+        ],
+        "reason": "備查編號、建照、名稱或基地變更，需人工核對"
+      },
+      {
+        "sourceKey": "桃園其他:fallback:心世界2:未提供",
+        "city": "桃園市",
+        "district": "觀音區",
+        "name": "心世界2",
+        "region": "桃園其他",
+        "builder": "樸美建設股份有限公司",
+        "households": 18,
+        "declaredDate": "2021-10-14",
+        "address": "福祥街125號旁",
+        "buildingLand": "未提供",
+        "permitNo": "未提供",
+        "sourceIntegrity": null,
+        "reason": "缺少備查編號、建照及基地，無法安全辨識"
+      },
+      {
+        "sourceKey": "新北其他:permit:110泰建字第004803號",
+        "city": "新北市",
+        "district": "泰山區",
+        "name": "新潤A5Ⅱ大道鎏域",
+        "region": "新北其他",
+        "builder": "新潤建設股份有限公司",
+        "households": 199,
+        "declaredDate": "2021-10-06",
+        "address": "新北大道五段與幸福路旁",
+        "buildingLand": "新泰段18地號",
+        "permitNo": "110泰建字第00480-3號",
+        "sourceIntegrity": null,
+        "reason": "來源身分重複，需人工核對"
+      },
+      {
+        "sourceKey": "新竹市:fallback:九如行館:未提供",
+        "city": "新竹市",
+        "district": "新竹市",
+        "name": "九如行館",
+        "region": "新竹市",
+        "builder": "凱歌堂開發建設有限公司",
+        "households": 9,
+        "declaredDate": "2021-09-02",
+        "address": "東區經國路一段315巷6弄旁",
+        "buildingLand": "未提供",
+        "permitNo": "未提供",
+        "sourceIntegrity": null,
+        "reason": "缺少備查編號、建照及基地，無法安全辨識"
+      },
+      {
+        "sourceKey": "桃園其他:permit:桃市都建執照字第會龜0150201號",
+        "city": "桃園市",
+        "district": "龜山區",
+        "name": "幸福城市",
+        "region": "桃園其他",
+        "builder": "?鎧國際開發有限公司",
+        "households": 97,
+        "declaredDate": null,
+        "address": "東萬壽路西側",
+        "buildingLand": "塔寮坑段837地號",
+        "permitNo": "桃市都建執照字第會龜01502-01號",
+        "sourceIntegrity": null,
+        "reason": "來源身分重複，需人工核對"
+      },
+      {
+        "sourceKey": "桃園其他:permit:桃市都建執照字第會壢00910號",
+        "city": "桃園市",
+        "district": "中壢區",
+        "name": "宜誠泱",
+        "region": "桃園其他",
+        "builder": "華曜建設股份有限公司",
+        "households": 130,
+        "declaredDate": null,
+        "address": "領航南路四段170號旁",
+        "buildingLand": "青昇段390地號",
+        "permitNo": "桃市都建執照字第會壢00910號",
+        "sourceIntegrity": null,
+        "reason": "來源身分重複，需人工核對"
+      },
+      {
+        "sourceKey": "桃園其他:permit:桃市都建執照字第會觀00420號",
+        "city": "桃園市",
+        "district": "觀音區",
+        "name": "米蘭之星 NO. 5",
+        "region": "桃園其他",
+        "builder": "合旺建設有限公司",
+        "households": 21,
+        "declaredDate": null,
+        "address": "新村路二段28號旁",
+        "buildingLand": "忠孝段958地號",
+        "permitNo": "桃市都建執照字第會觀00420號",
+        "sourceIntegrity": null,
+        "reason": "來源身分重複，需人工核對"
+      },
+      {
+        "sourceKey": "新北其他:registry:QPRNMLSJMHKGFHF76CG",
+        "city": "新北市",
+        "district": "中和區",
+        "name": "左岸明珠B區",
+        "region": "新北其他",
+        "builder": "愛山林建設開發股份有限公司",
+        "households": 357,
+        "declaredDate": null,
+        "address": "環河西路三段與永和路交叉口",
+        "buildingLand": "福祥段648地號",
+        "permitNo": "105中建字第00510號",
+        "sourceIntegrity": null,
+        "matchedIds": [
+          "new-taipei-3b7f8aa929"
+        ],
+        "reason": "備查編號、建照、名稱或基地變更，需人工核對"
+      }
+    ],
+    "missing": [
+      {
+        "id": "taipei-4f8dc487d8",
+        "name": "華固時代置地",
+        "region": "臺北市",
+        "sourceKey": "臺北市:permit:1120706"
+      },
+      {
+        "id": "taipei-b5257c3be1",
+        "name": "西華璞園",
+        "region": "臺北市",
+        "sourceKey": "臺北市:permit:1120831"
+      },
+      {
+        "id": "taipei-e42fbb50fc",
+        "name": "奧斯卡內湖舊宗商辦案",
+        "region": "臺北市",
+        "sourceKey": "臺北市:permit:1130515"
+      },
+      {
+        "id": "taipei-09b2d6356c",
+        "name": "金矽谷全球經貿中心",
+        "region": "臺北市",
+        "sourceKey": "臺北市:registry:1140612"
+      }
+    ]
   },
-  "historicalBacklog": [
+  "historicalBacklog": [],
+  "sourceManifest": [
     {
-      "sourceKey": "林口:permit:113林建字第00154號",
-      "name": "富匠",
       "region": "林口",
-      "builder": "證源建設股份有限公司",
-      "households": 31,
-      "declaredDate": "2025-05-10",
-      "address": "林口路",
-      "buildingLand": "林口段921地號",
-      "permitNo": "113林建字第00154號"
+      "city": "新北市",
+      "file": "f_lvr_buildcase.csv",
+      "sha256": "58aa36137cc67b8bc02f37b128c032ded9a7a2ef1adbf3567ad0a1d445e1dadd",
+      "publishedAt": null,
+      "sourceUrl": "https://plvr.land.moi.gov.tw/Download?PayType=saleremark&fileName=f_lvr_buildcase.csv"
     },
     {
-      "sourceKey": "林口:registry:QPPNMLRKLHKGFBF48CG",
-      "name": "亞昕·寓邸",
-      "region": "林口",
-      "builder": "亞昕國際開發股份有限公司",
-      "households": 77,
-      "declaredDate": "2025-03-17",
-      "address": "文化路二段",
-      "buildingLand": "麗林段382地號",
-      "permitNo": "112林建字第00262-02號"
-    },
-    {
-      "sourceKey": "林口:registry:QPXNMLNLPHJGFBF66CG",
-      "name": "原昕吾旭",
-      "region": "林口",
-      "builder": "原昕建設股份有限公司",
-      "households": 58,
-      "declaredDate": "2024-07-23",
-      "address": "文林街",
-      "buildingLand": "麗林段644地號",
-      "permitNo": "113林建字第00165號"
-    },
-    {
-      "sourceKey": "林口:permit:113林建字第00179號",
-      "name": "森鉅M 逸境",
-      "region": "林口",
-      "builder": "森鉅建設股份有限公司",
-      "households": 77,
-      "declaredDate": "2024-07-05",
-      "address": "文化北路二段550巷29弄",
-      "buildingLand": "麗林段492地號",
-      "permitNo": "113林建字第00179號"
-    },
-    {
-      "sourceKey": "林口:registry:QPPNMLLJPHJGFBF08CG",
-      "name": "群祥謙",
-      "region": "林口",
-      "builder": "豐林營建股份有限公司",
-      "households": 39,
-      "declaredDate": "2024-07-01",
-      "address": "文林四街",
-      "buildingLand": "力行段383地號",
-      "permitNo": "113林建字第00212號"
-    },
-    {
-      "sourceKey": "林口:permit:113林建字第00136號",
-      "name": "森鉅M 林境",
-      "region": "林口",
-      "builder": "森鉅建設股份有限公司",
-      "households": 111,
-      "declaredDate": "2024-06-27",
-      "address": "文化北路二段552號旁",
-      "buildingLand": "麗林段512地號",
-      "permitNo": "113林建字第00136號"
-    },
-    {
-      "sourceKey": "林口:permit:113林建字第00197號",
-      "name": "山侘一生",
-      "region": "林口",
-      "builder": "立陽開發股份有限公司",
-      "households": 67,
-      "declaredDate": "2024-06-26",
-      "address": "惠民街88巷",
-      "buildingLand": "建林段645地號",
-      "permitNo": "113林建字第00197號"
-    },
-    {
-      "sourceKey": "林口:permit:112林建字第00307號",
-      "name": "築禾琢立",
-      "region": "林口",
-      "builder": "築禾建設股份有限公司  起造人:黃劍輝",
-      "households": 67,
-      "declaredDate": "2024-05-31",
-      "address": "南勢六街及過崙街交叉路口",
-      "buildingLand": "建林段1173地號",
-      "permitNo": "112林建字第00307號"
-    },
-    {
-      "sourceKey": "林口:registry:YPPNMLMLNHJGFBF09DG",
-      "name": "原森 TWIN TOWERS",
-      "region": "林口",
-      "builder": "德弘建設有限公司",
-      "households": 293,
-      "declaredDate": "2024-05-22",
-      "address": "文化三路一段與仁愛二路口",
-      "buildingLand": "力行段1025-1地號",
-      "permitNo": "113林建字第00021號"
-    },
-    {
-      "sourceKey": "林口:permit:111林建字第00252號",
-      "name": "小·學堂",
-      "region": "林口",
-      "builder": "春宏建設有限公司",
-      "households": 43,
-      "declaredDate": "2024-05-03",
-      "address": "民權路",
-      "buildingLand": "力行段499地號",
-      "permitNo": "111林建字第00252號"
-    },
-    {
-      "sourceKey": "林口:permit:111林建字第00164號",
-      "name": "築禾忠孝苑",
-      "region": "林口",
-      "builder": "築禾建設股份有限公司",
-      "households": 211,
-      "declaredDate": "2024-04-23",
-      "address": "忠孝路",
-      "buildingLand": "建林段59地號",
-      "permitNo": "111林建字第00164號"
-    },
-    {
-      "sourceKey": "林口:registry:RPPNMLSJLHJGFBF58DG",
-      "name": "富堡晶鑄",
-      "region": "林口",
-      "builder": "富棠建設股份有限公司",
-      "households": 186,
-      "declaredDate": "2024-03-08",
-      "address": "文化三路一段39巷",
-      "buildingLand": "建林段444地號",
-      "permitNo": "112林建字第00239號"
-    },
-    {
-      "sourceKey": "林口:registry:QPQNMLLLKHJGFBF87CG",
-      "name": "聿翔沐風",
-      "region": "林口",
-      "builder": "聿翔建設股份有限公司",
-      "households": 51,
-      "declaredDate": "2024-02-21",
-      "address": "民族路",
-      "buildingLand": "力行段1233地號",
-      "permitNo": "112林建字第00400號"
-    },
-    {
-      "sourceKey": "林口:permit:111林建字第00253號",
-      "name": "長虹天聚",
-      "region": "林口",
-      "builder": "長虹建設股份有限公司 等四人",
-      "households": 486,
-      "declaredDate": "2024-01-24",
-      "address": "中山路與民權路路口",
-      "buildingLand": "力行段281地號",
-      "permitNo": "111林建字第00253號"
-    },
-    {
-      "sourceKey": "林口:permit:113林建字第00010號",
-      "name": "立軒天邸",
-      "region": "林口",
-      "builder": "玥軒開發建設股份有限公司",
-      "households": 144,
-      "declaredDate": "2024-01-16",
-      "address": "文化三路二段與文化三路二段41巷交叉口",
-      "buildingLand": "力行段570地號",
-      "permitNo": "113林建字第00010號"
-    },
-    {
-      "sourceKey": "林口:registry:QPPNMLTJJHJGFBF38DG",
-      "name": "亞昕森匯·天匯(天匯)",
-      "region": "林口",
-      "builder": "亞昕國際開發股份有限公司及益昕投資股份有限公司",
-      "households": 364,
-      "declaredDate": "2024-01-09",
-      "address": "信義路與吉祥路交叉口",
-      "buildingLand": "力行段174地號",
-      "permitNo": "112林建字第00453號"
-    },
-    {
-      "sourceKey": "林口:registry:QPPNMLPJJHJGFBF97DG",
-      "name": "亞昕森匯·天匯(森匯)",
-      "region": "林口",
-      "builder": "亞昕國際開發股份有限公司及益昕投資股份有限公司",
-      "households": 364,
-      "declaredDate": "2024-01-05",
-      "address": "信義路與吉祥路交叉口",
-      "buildingLand": "力行段174地號",
-      "permitNo": "112林建字第00453號"
-    },
-    {
-      "sourceKey": "林口:permit:112林建字第00275號",
-      "name": "寶閣",
-      "region": "林口",
-      "builder": "擇林建設股份有限公司",
-      "households": 35,
-      "declaredDate": "2023-10-27",
-      "address": "中北三街138巷與中北三街交接口",
-      "buildingLand": "麗林段278地號",
-      "permitNo": "112林建字第00275號"
-    },
-    {
-      "sourceKey": "林口:registry:QPPNMLOJIIIGFBF67CG",
-      "name": "優學",
-      "region": "林口",
-      "builder": "合軒建設有限公司       林瑩珊",
-      "households": 93,
-      "declaredDate": "2023-10-04",
-      "address": "佳林路",
-      "buildingLand": "新林段1095地號",
-      "permitNo": "111林建字第00452號"
-    },
-    {
-      "sourceKey": "林口:registry:QPRNMLLLPHIGFBF38CG",
-      "name": "盛德藝",
-      "region": "林口",
-      "builder": "盛德建設股份有限公司",
-      "households": 63,
-      "declaredDate": "2023-07-21",
-      "address": "八德路500巷",
-      "buildingLand": "建林段640地號",
-      "permitNo": "112林建字第000245號"
-    },
-    {
-      "sourceKey": "林口:registry:QPPNMLQLOHIGFBF68DG",
-      "name": "長耀 i PARK",
-      "region": "林口",
-      "builder": "立鵬資產股份有限公司",
-      "households": 117,
-      "declaredDate": "2023-06-26",
-      "address": "民族路與文化三路617巷口",
-      "buildingLand": "力行段983地號",
-      "permitNo": "112林建字第00179號"
-    },
-    {
-      "sourceKey": "林口:permit:112林建字第00101號",
-      "name": "CLASSY HOME",
-      "region": "林口",
-      "builder": "森築開發股份有限公司",
-      "households": 510,
-      "declaredDate": "2023-05-23",
-      "address": "忠孝路69號對面",
-      "buildingLand": "建林段80地號",
-      "permitNo": "112林建字第00101號"
-    },
-    {
-      "sourceKey": "林口:permit:112林建字第00057號",
-      "name": "森鉅旭",
-      "region": "林口",
-      "builder": "森鉅建設股份有限公司、聯合安豐股份有限公司",
-      "households": 77,
-      "declaredDate": "2023-05-16",
-      "address": "南勢一街36號旁",
-      "buildingLand": "建林段750地號",
-      "permitNo": "112林建字第00057號"
-    },
-    {
-      "sourceKey": "林口:registry:RPPNMLSJNHIGFBF58CG",
-      "name": "立軒天語",
-      "region": "林口",
-      "builder": "樂軒開發建設股份有限公司",
-      "households": 57,
-      "declaredDate": "2023-05-08",
-      "address": "文化二路二段",
-      "buildingLand": "力行段39地號",
-      "permitNo": "112林建字第00140號"
-    },
-    {
-      "sourceKey": "林口:permit:111林建字第00425號",
-      "name": "和洲艾美",
-      "region": "林口",
-      "builder": "和洲建設股份有限公司",
-      "households": 208,
-      "declaredDate": "2023-04-19",
-      "address": "文化一路二段、寶林路交叉口",
-      "buildingLand": "佳林段84地號",
-      "permitNo": "111林建字第00425號"
-    },
-    {
-      "sourceKey": "林口:permit:111林建字第00443號",
-      "name": "宏樸日心說",
-      "region": "林口",
-      "builder": "宏樸建設有限公司",
-      "households": 22,
-      "declaredDate": "2023-04-06",
-      "address": "民享路",
-      "buildingLand": "麗林段342地號",
-      "permitNo": "111林建字第00443號"
-    },
-    {
-      "sourceKey": "林口:registry:TPPNMLTLLHIGFBF88CG",
-      "name": "聯廣闊境",
-      "region": "林口",
-      "builder": "聯廣建設股份有限公司",
-      "households": 119,
-      "declaredDate": "2023-03-29",
-      "address": "文化二路一段309巷",
-      "buildingLand": "力行段871地號",
-      "permitNo": "111林建字第00455號"
-    },
-    {
-      "sourceKey": "林口:permit:110林建字第00589號",
-      "name": "泓昇昇美",
-      "region": "林口",
-      "builder": "泓昇建設股份有限公司",
-      "households": 40,
-      "declaredDate": "2023-03-25",
-      "address": "南勢三街1巷",
-      "buildingLand": "建林段903地號",
-      "permitNo": "110林建字第00589號"
-    },
-    {
-      "sourceKey": "林口:permit:112林建字第00028號",
-      "name": "頤昌柏舍",
-      "region": "林口",
-      "builder": "頤昌建設股份有限公司",
-      "households": 80,
-      "declaredDate": "2023-03-20",
-      "address": "中山路、文林三街交叉口",
-      "buildingLand": "麗林段905地號",
-      "permitNo": "112林建字第00028號"
-    },
-    {
-      "sourceKey": "林口:registry:SPPNMLOKLHIGFBF18CG",
-      "name": "聿德觀璟",
-      "region": "林口",
-      "builder": "聿德企業股份有限公司",
-      "households": 93,
-      "declaredDate": "2023-03-14",
-      "address": "文化北路二段",
-      "buildingLand": "麗林段911-1地號",
-      "permitNo": "112林建字第00030號"
-    },
-    {
-      "sourceKey": "林口:permit:111林建字第00421號",
-      "name": "川弘INSIGHT",
-      "region": "林口",
-      "builder": "晟銘建設有限公司",
-      "households": 27,
-      "declaredDate": "2023-03-06",
-      "address": "興林路151巷10號旁",
-      "buildingLand": "新林段330地號",
-      "permitNo": "111林建字第00421號"
-    },
-    {
-      "sourceKey": "A7:permit:111桃市都建執照字第會龜0818號",
-      "name": "大亮波波",
       "region": "A7",
-      "builder": "大亮建築股份有限公司",
-      "households": 306,
-      "declaredDate": "2023-02-14",
-      "address": "樂善二路上",
-      "buildingLand": "善捷段160地號",
-      "permitNo": "(111)桃市都建執照字第會龜0818號"
+      "city": "桃園市",
+      "file": "h_lvr_buildcase.csv",
+      "sha256": "66fa3264ba6c38432bb43c6e9d4a0a3f6170e01f57d6dd7a2c4eb3e622851ded",
+      "publishedAt": null,
+      "sourceUrl": "https://plvr.land.moi.gov.tw/Download?PayType=saleremark&fileName=h_lvr_buildcase.csv"
     },
     {
-      "sourceKey": "林口:permit:111林建字第00479號",
-      "name": "森聯上上謙(森治)",
-      "region": "林口",
-      "builder": "森寶開發股份有限公司、森築開發股份有限公司",
-      "households": 226,
-      "declaredDate": "2023-02-03",
-      "address": "民權路172號對面",
-      "buildingLand": "力行段338地號",
-      "permitNo": "111林建字第00479號"
+      "region": "桃園其他",
+      "city": "桃園市",
+      "file": "h_lvr_buildcase.csv",
+      "sha256": "66fa3264ba6c38432bb43c6e9d4a0a3f6170e01f57d6dd7a2c4eb3e622851ded",
+      "publishedAt": null,
+      "sourceUrl": "https://plvr.land.moi.gov.tw/Download?PayType=saleremark&fileName=h_lvr_buildcase.csv"
     },
     {
-      "sourceKey": "林口:permit:111林建字第00485號",
-      "name": "頤昌松琚",
-      "region": "林口",
-      "builder": "頤昌建設股份有限公司",
-      "households": 78,
-      "declaredDate": "2023-01-13",
-      "address": "中山路、文林三街交叉口",
-      "buildingLand": "麗林段902地號",
-      "permitNo": "111林建字第00485號"
+      "region": "新竹縣",
+      "city": "新竹縣",
+      "file": "j_lvr_buildcase.csv",
+      "sha256": "08e5b9fc271a23231ea92487a69de8b826d289ee54082d1ab5288527d5c460a4",
+      "publishedAt": null,
+      "sourceUrl": "https://plvr.land.moi.gov.tw/Download?PayType=saleremark&fileName=j_lvr_buildcase.csv"
     },
     {
-      "sourceKey": "A7:permit:110桃市都建執照字第會龜01373號",
-      "name": "富來舞綻",
-      "region": "A7",
-      "builder": "富來建設股份有限公司",
-      "households": 119,
-      "declaredDate": "2022-11-17",
-      "address": "樂善三路與樂善二路交叉口附近",
-      "buildingLand": "善捷段39地號",
-      "permitNo": "110桃市都建執照字第會龜01373號"
+      "region": "新竹市",
+      "city": "新竹市",
+      "file": "o_lvr_buildcase.csv",
+      "sha256": "aee033383c885027d44c86ef32a4a407827b28cc0d9952c99b4c080c5e4dd131",
+      "publishedAt": null,
+      "sourceUrl": "https://plvr.land.moi.gov.tw/Download?PayType=saleremark&fileName=o_lvr_buildcase.csv"
     },
     {
-      "sourceKey": "林口:permit:111林建字第00271號",
-      "name": "森聯上上謙(森越)",
-      "region": "林口",
-      "builder": "森寶開發股份有限公司",
-      "households": 226,
-      "declaredDate": "2022-11-10",
-      "address": "民權路110號對面",
-      "buildingLand": "力行段437地號",
-      "permitNo": "111林建字第00271號"
+      "region": "臺北市",
+      "city": "臺北市",
+      "file": "a_lvr_buildcase.csv",
+      "sha256": "2caa1df879320196343537a3c918309a47ef636ed65cb6e7c8186dbb571bddfe",
+      "publishedAt": null,
+      "sourceUrl": "https://plvr.land.moi.gov.tw/Download?PayType=saleremark&fileName=a_lvr_buildcase.csv"
     },
     {
-      "sourceKey": "林口:registry:WPQNMLOJIIHGFBF38DG",
-      "name": "璽來登日朗",
-      "region": "林口",
-      "builder": "家?建設股份有限公司",
-      "households": 183,
-      "declaredDate": "2022-10-04",
-      "address": "民權路與文化三路二段41巷交叉口",
-      "buildingLand": "力行段609地號",
-      "permitNo": "111林建字00392號"
-    },
-    {
-      "sourceKey": "林口:permit:111林建字第00357號",
-      "name": "侘極",
-      "region": "林口",
-      "builder": "立陽開發股份有限公司",
-      "households": 113,
-      "declaredDate": "2022-09-15",
-      "address": "民族路/民族路82巷交叉路口",
-      "buildingLand": "力行段1176地號",
-      "permitNo": "111林建字第00357號"
-    },
-    {
-      "sourceKey": "林口:registry:ZPPNMLOKRHHGFBF86DG",
-      "name": "長耀加",
-      "region": "林口",
-      "builder": "長耀國際興業有限公司",
-      "households": 114,
-      "declaredDate": "2022-09-14",
-      "address": "文化三路一段555巷",
-      "buildingLand": "力行段1031地號",
-      "permitNo": "111林建字第00308號"
-    },
-    {
-      "sourceKey": "A7:permit:110桃市都建執照字第會龜00630號",
-      "name": "合展家禾",
-      "region": "A7",
-      "builder": "合展建設股份有限公司",
-      "households": 311,
-      "declaredDate": "2022-08-23",
-      "address": "長慶二街及樂學路交叉口",
-      "buildingLand": "樂捷段122地號",
-      "permitNo": "110桃市都建執照字第會龜00630號"
-    },
-    {
-      "sourceKey": "林口:registry:SPPNMLMLPHHGFBF38CG",
-      "name": "雲天下",
-      "region": "林口",
-      "builder": "冠宸建設有限公司",
-      "households": 23,
-      "declaredDate": "2022-07-22",
-      "address": "仁愛路一段",
-      "buildingLand": "新林段167地號",
-      "permitNo": "111林建字第00193號"
-    },
-    {
-      "sourceKey": "A7:permit:109桃市都建執照字第會龜9461",
-      "name": "智匯學",
-      "region": "A7",
-      "builder": "和峻建設股份有限公司",
-      "households": 145,
-      "declaredDate": "2022-07-14",
-      "address": "牛角坡路和樂善二路交叉口附近",
-      "buildingLand": "善捷段70地號",
-      "permitNo": "(109)桃市都建執照字第會龜946-1"
-    },
-    {
-      "sourceKey": "林口:permit:111年林建字第00265號",
-      "name": "立軒天翠",
-      "region": "林口",
-      "builder": "立軒開發建設股份有限公司",
-      "households": 77,
-      "declaredDate": "2022-07-08",
-      "address": "仁愛二路",
-      "buildingLand": "力行段1144地號",
-      "permitNo": "111年林建字第00265號"
-    },
-    {
-      "sourceKey": "林口:permit:111林建字第00133號",
-      "name": "原昕吾為",
-      "region": "林口",
-      "builder": "原昕建設股份有限公司",
-      "households": 60,
-      "declaredDate": "2022-07-04",
-      "address": "文化三路二段41巷",
-      "buildingLand": "力行段610地號",
-      "permitNo": "111林建字第00133號"
-    },
-    {
-      "sourceKey": "A7:permit:桃市都建執照字第會龜0026802號",
-      "name": "大華旭",
-      "region": "A7",
-      "builder": "大華建設股份有限公司",
-      "households": 190,
-      "declaredDate": "2022-06-10",
-      "address": "樂學三路與樂學二路旁",
-      "buildingLand": "樂捷段174地號",
-      "permitNo": "桃市都建執照字第會龜00268-02號"
-    },
-    {
-      "sourceKey": "林口:permit:110林建字第0009601號",
-      "name": "聚美家",
-      "region": "林口",
-      "builder": "聚美建設股份有限公司",
-      "households": 31,
-      "declaredDate": "2022-06-07",
-      "address": "南勢一街17巷",
-      "buildingLand": "建林段789地號",
-      "permitNo": "110林建字第00096-01號"
-    },
-    {
-      "sourceKey": "林口:registry:UPQNMLMJOHHGFBF38CG",
-      "name": "侘壹",
-      "region": "林口",
-      "builder": "立陽開發股份有限公司",
-      "households": 84,
-      "declaredDate": "2022-06-02",
-      "address": "文化一路一段135巷/文化一路一段83巷14弄交叉路口",
-      "buildingLand": "國宅段24地號",
-      "permitNo": "111林建字第00207號"
-    },
-    {
-      "sourceKey": "A7:permit:桃市都建執照字第會龜0038701號",
-      "name": "君邑羅浮",
-      "region": "A7",
-      "builder": "法邑建設有限公司",
-      "households": 320,
-      "declaredDate": "2022-05-05",
-      "address": "文化一路附近",
-      "buildingLand": "善捷段172地號",
-      "permitNo": "桃市都建執照字第會龜00387-01號"
-    },
-    {
-      "sourceKey": "林口:registry:QPPNMLSKMHHGFBF48DG",
-      "name": "潤鴻日麗",
-      "region": "林口",
-      "builder": "潤鴻建築股份有限公司",
-      "households": 187,
-      "declaredDate": "2022-04-18",
-      "address": "文化二路二段",
-      "buildingLand": "力行段60地號",
-      "permitNo": "111林建字第00125號"
-    },
-    {
-      "sourceKey": "林口:permit:110林建字第00375號",
-      "name": "聯太淳青",
-      "region": "林口",
-      "builder": "聯太建設股份有限公司",
-      "households": 24,
-      "declaredDate": "2022-04-12",
-      "address": "惠民街30巷",
-      "buildingLand": "建林段609地號",
-      "permitNo": "110林建字第00375號"
-    },
-    {
-      "sourceKey": "林口:permit:111林建字第00084號",
-      "name": "敘日",
-      "region": "林口",
-      "builder": "仟崎建設股份有限公司",
-      "households": 44,
-      "declaredDate": "2022-03-15",
-      "address": "文化二路一段",
-      "buildingLand": "國宅段6-1地號",
-      "permitNo": "111林建字第00084號"
-    },
-    {
-      "sourceKey": "林口:registry:RPPNMLPLKHHGFBF08CG",
-      "name": "松柏硯",
-      "region": "林口",
-      "builder": "聿瑞建設股份有限公司",
-      "households": 71,
-      "declaredDate": "2022-02-25",
-      "address": "文化北路二段550巷30弄",
-      "buildingLand": "麗林段547地號",
-      "permitNo": "111林建字第00060號"
-    },
-    {
-      "sourceKey": "A7:permit:108桃市都建執照字第會龜01027",
-      "name": "富宇天匯",
-      "region": "A7",
-      "builder": "富宇建設股份有限公司",
-      "households": 270,
-      "declaredDate": "2022-02-07",
-      "address": "文青二路93號對面",
-      "buildingLand": "善捷段287地號",
-      "permitNo": "(108)桃市都建執照字第會龜01027"
-    },
-    {
-      "sourceKey": "林口:permit:110林建字第00628號",
-      "name": "長耀里",
-      "region": "林口",
-      "builder": "立鵬資產股份有限公司",
-      "households": 201,
-      "declaredDate": "2022-01-10",
-      "address": "富貴路",
-      "buildingLand": "力行段137地號",
-      "permitNo": "110林建字第00628號"
-    },
-    {
-      "sourceKey": "A7:permit:桃市都建執照字第會龜01289號",
-      "name": "豐邑森活",
-      "region": "A7",
-      "builder": "豐邑建設股份有限公司",
-      "households": 328,
-      "declaredDate": "2022-01-04",
-      "address": "長庚路與樂安路間",
-      "buildingLand": "樂捷段86地號",
-      "permitNo": "桃市都建執照字第會龜01289號"
-    },
-    {
-      "sourceKey": "林口:permit:110林建字第00374號",
-      "name": "時尚One",
-      "region": "林口",
-      "builder": "康宸建設股份有限公司",
-      "households": 21,
-      "declaredDate": "2021-12-30",
-      "address": "文化北路1段299巷",
-      "buildingLand": "建林段997地號",
-      "permitNo": "110林建字第00374號"
-    },
-    {
-      "sourceKey": "林口:registry:QPPNMLRLKIGGFBF18CG",
-      "name": "林口珍境",
-      "region": "林口",
-      "builder": "岱鋒建設股份有限公司",
-      "households": 68,
-      "declaredDate": "2021-12-27",
-      "address": "信義路",
-      "buildingLand": "力行段116地號",
-      "permitNo": "105林建字第00260-01號"
-    },
-    {
-      "sourceKey": "林口:permit:110林建字第00017號",
-      "name": "合峰曜境",
-      "region": "林口",
-      "builder": "合峰建設股份有限公司",
-      "households": 86,
-      "declaredDate": "2021-12-01",
-      "address": "文化三路二段41巷",
-      "buildingLand": "力行段592地號",
-      "permitNo": "110林建字第00017號"
-    },
-    {
-      "sourceKey": "林口:registry:RPQNMLSKJIGGFBF38DG",
-      "name": "亞昕昕銀座",
-      "region": "林口",
-      "builder": "亞昕國際開發股份有限公司",
-      "households": 181,
-      "declaredDate": "2021-11-18",
-      "address": "文化三路一段上",
-      "buildingLand": "力行段718地號",
-      "permitNo": "110林建字第00556號"
-    },
-    {
-      "sourceKey": "A7:permit:110桃市都建執照字第會龜1488號",
-      "name": "大亮泊",
-      "region": "A7",
-      "builder": "大亮建築股份有限公司",
-      "households": 1255,
-      "declaredDate": "2021-11-17",
-      "address": "文化一路",
-      "buildingLand": "善捷段44地號",
-      "permitNo": "(110)桃市都建執照字第會龜1488號"
-    },
-    {
-      "sourceKey": "林口:permit:110林建字第00533號",
-      "name": "立軒天頤",
-      "region": "林口",
-      "builder": "銘軒開發建設股份有限公司",
-      "households": 91,
-      "declaredDate": "2021-11-16",
-      "address": "仁愛二路",
-      "buildingLand": "力行段1043地號",
-      "permitNo": "110林建字第00533號"
-    },
-    {
-      "sourceKey": "林口:registry:QPPNMLOJJIGGFBF57CG",
-      "name": "新潤Double",
-      "region": "林口",
-      "builder": "新潤興業股份有限公司",
-      "households": 312,
-      "declaredDate": "2021-11-04",
-      "address": "文化二路二段與文化二路二段113巷交叉口",
-      "buildingLand": "力行段145地號",
-      "permitNo": "110林建字第00496號"
-    },
-    {
-      "sourceKey": "林口:registry:QPPNMLMLIIGGFBF47CG",
-      "name": "九揚華都",
-      "region": "林口",
-      "builder": "九誠建設股份有限公司",
-      "households": 295,
-      "declaredDate": "2021-10-22",
-      "address": "文化三路一段、仁愛一路口",
-      "buildingLand": "力行段722地號",
-      "permitNo": "109林建字第00004-01號"
-    },
-    {
-      "sourceKey": "林口:registry:QPQNMLTLRHGGFBF56DG",
-      "name": "愛家匯",
-      "region": "林口",
-      "builder": "家泰資產開發股份有限公司",
-      "households": 84,
-      "declaredDate": "2021-09-29",
-      "address": "忠孝一路",
-      "buildingLand": "建林段152地號",
-      "permitNo": "110林建字第00445號"
-    },
-    {
-      "sourceKey": "A7:permit:110桃市都建執照字第會龜003111",
-      "name": "玄泰T1",
-      "region": "A7",
-      "builder": "群泰開發有限公司",
-      "households": 595,
-      "declaredDate": "2021-09-09",
-      "address": "文桃路附近",
-      "buildingLand": "善捷段62地號",
-      "permitNo": "110桃市都建執照字第會龜00311-1"
-    },
-    {
-      "sourceKey": "A7:registry:RPPNMLQKQHGGFDH98CG",
-      "name": "頤昌澄岳",
-      "region": "A7",
-      "builder": "頤昌建設股份有限公司",
-      "households": 148,
-      "declaredDate": "2021-08-16",
-      "address": "樂學一路、樂學二路交叉口",
-      "buildingLand": "樂捷段212地號",
-      "permitNo": "110桃市都建執照字第會龜00808號"
-    },
-    {
-      "sourceKey": "林口:registry:QPPNMLQJQHGGFBF48DG",
-      "name": "力璞學",
-      "region": "林口",
-      "builder": "力馥建設股份有限公司",
-      "households": 95,
-      "declaredDate": "2021-08-06",
-      "address": "興林一街82巷15號旁",
-      "buildingLand": "新林段332地號",
-      "permitNo": "110林建字第00053號"
-    },
-    {
-      "sourceKey": "林口:registry:QPPNMLMJQHGGFBF08DG",
-      "name": "盛德富",
-      "region": "林口",
-      "builder": "盛德建設股份有限公司",
-      "households": 75,
-      "declaredDate": "2021-08-02",
-      "address": "惠民街",
-      "buildingLand": "建林段594地號",
-      "permitNo": "110林建字第00337號"
-    },
-    {
-      "sourceKey": "林口:registry:QPQNMLOKPHGGFBF28CG",
-      "name": "竹林苑",
-      "region": "林口",
-      "builder": "金東興建設股份有限公司",
-      "households": 22,
-      "declaredDate": "2021-07-14",
-      "address": "竹林路606巷",
-      "buildingLand": "佳林段151地號",
-      "permitNo": "110林建字第00120號"
-    },
-    {
-      "sourceKey": "A7:permit:桃市都建執照字第會龜010392",
-      "name": "維特魯威",
-      "region": "A7",
-      "builder": "法邑建設有限公司",
-      "households": 136,
-      "declaredDate": "2021-07-14",
-      "address": "文桃路與牛角坡路交叉口",
-      "buildingLand": "善捷段64地號",
-      "permitNo": "桃市都建執照字第會龜01039-2"
-    },
-    {
-      "sourceKey": "林口:registry:QPQNMLMJKHIGFBF67CG",
-      "name": "立軒天玥",
-      "region": "林口",
-      "builder": "樂軒開發建設股份有限公司",
-      "households": 103,
-      "declaredDate": null,
-      "address": "吉祥路",
-      "buildingLand": "力行段246地號",
-      "permitNo": "112林建字第00006號"
-    },
-    {
-      "sourceKey": "林口:registry:QPPNMLRJIIKGFBF18CG",
-      "name": "宏樸如嶼",
-      "region": "林口",
-      "builder": "林建宏",
-      "households": 70,
-      "declaredDate": null,
-      "address": "文化三路2段257號旁",
-      "buildingLand": "麗林段725地號",
-      "permitNo": "114林建字第00194號"
-    },
-    {
-      "sourceKey": "林口:registry:QPWNMLSJKIKGFBF56CG",
-      "name": "合峰品境",
-      "region": "林口",
-      "builder": "合峰建設股份有限公司",
-      "households": 58,
-      "declaredDate": null,
-      "address": "文化一路二段197巷",
-      "buildingLand": "麗林段284-1地號",
-      "permitNo": "112林建字第00216號"
-    },
-    {
-      "sourceKey": "林口:permit:114林建字第00159號",
-      "name": "竹城世田谷",
-      "region": "林口",
-      "builder": "竹城建設股份有限公司",
-      "households": 74,
-      "declaredDate": null,
-      "address": "行政段628地號",
-      "buildingLand": "行政段628地號",
-      "permitNo": "114林建字第00159號"
-    },
-    {
-      "sourceKey": "A7:registry:QPPNMLQLNHLGFDH56CG",
-      "name": "AI都會城一期",
-      "region": "A7",
-      "builder": "愛山林建設開發股份有限公司",
-      "households": 1101,
-      "declaredDate": null,
-      "address": "文化一路旁",
-      "buildingLand": "善捷段164地號",
-      "permitNo": "桃市都建執照字第會龜00048-02號"
+      "region": "新北其他",
+      "city": "新北市",
+      "file": "f_lvr_buildcase.csv",
+      "sha256": "58aa36137cc67b8bc02f37b128c032ded9a7a2ef1adbf3567ad0a1d445e1dadd",
+      "publishedAt": null,
+      "sourceUrl": "https://plvr.land.moi.gov.tw/Download?PayType=saleremark&fileName=f_lvr_buildcase.csv"
     }
   ],
   "sources": [
     {
       "region": "林口",
+      "mode": "local-snapshot",
+      "importedAt": "2026-09-20",
       "name": "內政部預售屋建案備查資料",
       "url": "https://plvr.land.moi.gov.tw/DownloadOpenData",
       "file": "f_lvr_buildcase.csv"
     },
     {
       "region": "A7",
+      "mode": "local-snapshot",
+      "importedAt": "2026-09-20",
       "name": "內政部預售屋建案備查資料",
       "url": "https://plvr.land.moi.gov.tw/DownloadOpenData",
       "file": "h_lvr_buildcase.csv"
+    },
+    {
+      "region": "桃園其他",
+      "mode": "local-snapshot",
+      "importedAt": "2026-09-20",
+      "name": "內政部預售屋建案備查資料",
+      "url": "https://plvr.land.moi.gov.tw/DownloadOpenData",
+      "file": "h_lvr_buildcase.csv"
+    },
+    {
+      "region": "新竹縣",
+      "mode": "local-snapshot",
+      "importedAt": "2026-09-20",
+      "name": "內政部預售屋建案備查資料",
+      "url": "https://plvr.land.moi.gov.tw/DownloadOpenData",
+      "file": "j_lvr_buildcase.csv"
+    },
+    {
+      "region": "新竹市",
+      "mode": "local-snapshot",
+      "importedAt": "2026-09-20",
+      "name": "內政部預售屋建案備查資料",
+      "url": "https://plvr.land.moi.gov.tw/DownloadOpenData",
+      "file": "o_lvr_buildcase.csv"
+    },
+    {
+      "region": "臺北市",
+      "mode": "local-snapshot",
+      "importedAt": "2026-09-20",
+      "name": "內政部預售屋建案備查資料",
+      "url": "https://plvr.land.moi.gov.tw/DownloadOpenData",
+      "file": "a_lvr_buildcase.csv"
+    },
+    {
+      "region": "新北其他",
+      "mode": "local-snapshot",
+      "importedAt": "2026-09-20",
+      "name": "內政部預售屋建案備查資料",
+      "url": "https://plvr.land.moi.gov.tw/DownloadOpenData",
+      "file": "f_lvr_buildcase.csv"
     }
   ],
   "pipeline": {
     "status": "complete",
-    "pricedProjects": 37,
-    "totalProjects": 42,
-    "verifiedOrApproximateLocations": 31,
-    "qualityQueuedCount": 0,
-    "qualityReviewedCount": 42
+    "sourceMode": "local-snapshot",
+    "amenityMode": "official-intersections-and-enabled-region-routes-refreshed",
+    "pricedProjects": 288,
+    "totalProjects": 2304,
+    "individualLocationProjects": 382,
+    "verifiedLocationProjects": 368,
+    "approximateLocationProjects": 14,
+    "districtOnlyLocationProjects": 1922,
+    "amenityScoredProjects": 51,
+    "qualityQueuedCount": 2262,
+    "qualityReviewedCount": 42,
+    "regionalSupplyPeriod": "114Q4",
+    "locationUpdatedAt": "2026-09-20"
   }
 }

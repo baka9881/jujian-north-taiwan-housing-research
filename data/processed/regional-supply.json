@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-06T18:01:07.570Z",
+  "generatedAt": "2026-09-20T10:00:34.485Z",
   "latestPeriod": "114Q4",
   "latestPeriodLabel": "114 年第 4 季",
   "publishedAt": "2026-07-20",
@@ -168,6 +168,116 @@
       "quarterlyChange": null,
       "annualChange": null,
       "note": "最新統計通報列出的待售新成屋超過 2,000 宅行政區。"
+    },
+    "桃園其他": {
+      "region": "桃園其他",
+      "requestedGeography": "桃園市",
+      "geography": "桃園市",
+      "sourceLevel": "county",
+      "scopeLabel": "縣市參考",
+      "fallbackReason": "顯示桃園市全縣市資料，並非此分區或特定建案的剩餘戶數。",
+      "units": 19856,
+      "period": "114Q4",
+      "periodLabel": "114 年第 4 季",
+      "quarterlyChange": {
+        "units": 654,
+        "percent": 3.4,
+        "direction": "up"
+      },
+      "annualChange": {
+        "units": 983,
+        "percent": 5.2,
+        "direction": "up"
+      },
+      "note": null
+    },
+    "新竹縣": {
+      "region": "新竹縣",
+      "requestedGeography": "新竹縣",
+      "geography": "新竹縣",
+      "sourceLevel": "county",
+      "scopeLabel": "縣市參考",
+      "fallbackReason": "顯示新竹縣全縣市資料，並非此分區或特定建案的剩餘戶數。",
+      "units": 4403,
+      "period": "114Q4",
+      "periodLabel": "114 年第 4 季",
+      "quarterlyChange": {
+        "units": -457,
+        "percent": -9.4,
+        "direction": "down"
+      },
+      "annualChange": {
+        "units": -922,
+        "percent": -17.3,
+        "direction": "down"
+      },
+      "note": null
+    },
+    "新竹市": {
+      "region": "新竹市",
+      "requestedGeography": "新竹市",
+      "geography": "新竹市",
+      "sourceLevel": "county",
+      "scopeLabel": "縣市參考",
+      "fallbackReason": "顯示新竹市全縣市資料，並非此分區或特定建案的剩餘戶數。",
+      "units": 1518,
+      "period": "114Q4",
+      "periodLabel": "114 年第 4 季",
+      "quarterlyChange": {
+        "units": -112,
+        "percent": -6.9,
+        "direction": "down"
+      },
+      "annualChange": {
+        "units": -149,
+        "percent": -8.9,
+        "direction": "down"
+      },
+      "note": null
+    },
+    "臺北市": {
+      "region": "臺北市",
+      "requestedGeography": "臺北市",
+      "geography": "臺北市",
+      "sourceLevel": "county",
+      "scopeLabel": "縣市參考",
+      "fallbackReason": "顯示臺北市全縣市資料，並非此分區或特定建案的剩餘戶數。",
+      "units": 4710,
+      "period": "114Q4",
+      "periodLabel": "114 年第 4 季",
+      "quarterlyChange": {
+        "units": 126,
+        "percent": 2.7,
+        "direction": "up"
+      },
+      "annualChange": {
+        "units": 242,
+        "percent": 5.4,
+        "direction": "up"
+      },
+      "note": null
+    },
+    "新北其他": {
+      "region": "新北其他",
+      "requestedGeography": "新北市",
+      "geography": "新北市",
+      "sourceLevel": "county",
+      "scopeLabel": "縣市參考",
+      "fallbackReason": "顯示新北市全縣市資料，並非此分區或特定建案的剩餘戶數。",
+      "units": 19233,
+      "period": "114Q4",
+      "periodLabel": "114 年第 4 季",
+      "quarterlyChange": {
+        "units": -1200,
+        "percent": -5.9,
+        "direction": "down"
+      },
+      "annualChange": {
+        "units": -1309,
+        "percent": -6.4,
+        "direction": "down"
+      },
+      "note": null
     }
   },
   "sources": {

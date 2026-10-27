@@ -1,3 +1,12 @@
+import { geocodingProvider } from "./geocoding-provider.mjs";
+import {
+  extractIntersectionRoads,
+  findCrossRoad,
+  parseCountyItems,
+  parseCrossRoads,
+  parseTownItems,
+} from "./nlsc-intersections.mjs";
+import { regionFor } from "./regions.mjs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -10,8 +19,10 @@ const geocodeCachePath = path.join(cacheDirectory, "nominatim-projects.json");
 const overpassCachePath = path.join(cacheDirectory, "overpass-pois.json");
 const nominatimAmenitiesCachePath = path.join(cacheDirectory, "nominatim-amenities.json");
 const intersectionCachePath = path.join(cacheDirectory, "nlsc-intersections.json");
+const nlscAdminCachePath = path.join(cacheDirectory, "nlsc-admin.json");
 const locationOverridesPath = path.join(root, "data", "manual", "location-overrides.json");
 const userAgent = "JujianNorthTaiwan/1.0 (+https://jujian-north-taiwan.baka0406.chatgpt.site)";
+const geocoder = geocodingProvider();
 const generatedAt = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Taipei" }).format(new Date());
 
 const officialIntersectionSpecs = {
@@ -55,6 +66,12 @@ const scoreRules = [
   { category: "medical", label: "醫療", maxScore: 10, bands: [[1200, 10], [2500, 6]] },
 ];
 
+const retryableLocationMethods = new Set(["region-center", "catalogue-fallback"]);
+
+function usableGeocodeResult(result) {
+  return Number.isFinite(Number(result?.lat)) && Number.isFinite(Number(result?.lon));
+}
+
 async function readJson(filePath, fallback) {
   try {
     const raw = await readFile(filePath, "utf8");
@@ -69,6 +86,47 @@ function sleep(milliseconds) {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
 }
 
+export function shouldRefreshGeocode(previousLocation, queryAddress, cachedResult, cacheHasEntry = false) {
+  const addressChanged = Boolean(previousLocation) && previousLocation.queryAddress !== queryAddress;
+  if (addressChanged) return true;
+  if (cacheHasEntry && usableGeocodeResult(cachedResult)) return false;
+  if (!previousLocation || previousLocation.queryAddress !== queryAddress) return true;
+  return retryableLocationMethods.has(previousLocation.method);
+}
+
+export function splitAmenityWork(projects, resolveProjectRegion = regionFor) {
+  const locationProjects = [];
+  const scoredProjects = [];
+  for (const project of projects) {
+    const region = resolveProjectRegion(project);
+    if (!region) throw new Error(`未設定分區：${project.region}`);
+    locationProjects.push(project);
+    if (region.amenityEnabled) scoredProjects.push(project);
+  }
+  return { locationProjects, scoredProjects };
+}
+
+function emptyCategoryValues(value) {
+  return Object.fromEntries(Object.keys(categories).map((category) => [category, value]));
+}
+
+export function unavailableAmenityProject(location) {
+  return {
+    location,
+    score: null,
+    rawScore: 0,
+    distanceScore: null,
+    grade: null,
+    scoreReliability: "unavailable",
+    nearest: emptyCategoryValues(null),
+    categoryScores: emptyCategoryValues(0),
+    routeScores: emptyCategoryValues(0),
+    densityScores: emptyCategoryValues(0),
+    nearbyCounts: emptyCategoryValues(0),
+    scoreFormulaVersion: 2,
+  };
+}
+
 function fallbackPoint(project) {
   const seed = [...project.id].reduce((total, character) => total + character.charCodeAt(0), 0);
   const latitudeJitter = ((seed % 9) - 4) * 0.00007;
@@ -78,9 +136,34 @@ function fallbackPoint(project) {
     const y = (project.mapY - 33) / 34;
     return { latitude: 25.0885 - y * 0.0205 + latitudeJitter, longitude: 121.364 + x * 0.023 + longitudeJitter };
   }
-  const x = (project.mapX - 57) / 15;
-  const y = (project.mapY - 42) / 30;
-  return { latitude: 25.057 - y * 0.018 + latitudeJitter, longitude: 121.381 + x * 0.017 + longitudeJitter };
+  if (project.region === "A7") {
+    const x = (project.mapX - 57) / 15;
+    const y = (project.mapY - 42) / 30;
+    return { latitude: 25.057 - y * 0.018 + latitudeJitter, longitude: 121.381 + x * 0.017 + longitudeJitter };
+  }
+  const region = regionFor(project);
+  if (!region) throw new Error(`未設定分區：${project.region}`);
+  return { latitude: region.center[0], longitude: region.center[1] };
+}
+
+function fallbackLocation(project, queryAddress) {
+  const point = fallbackPoint(project);
+  if (project.region !== "林口" && project.region !== "A7") {
+    return {
+      ...point,
+      confidence: "estimated",
+      method: "region-center",
+      label: "分區示意中心，非建案位置",
+      queryAddress,
+    };
+  }
+  return {
+    ...point,
+    confidence: "estimated",
+    method: "catalogue-fallback",
+    label: "區域估算位置",
+    queryAddress,
+  };
 }
 
 function cleanAddress(address) {
@@ -129,40 +212,50 @@ function locationConfidence(project, result) {
 
 async function geocodeProjects(projects, previousProjects) {
   const cache = await readJson(geocodeCachePath, {});
+  const refreshedProjectIds = new Set();
   let changed = false;
 
   for (const [index, project] of projects.entries()) {
     const queryAddress = `${project.city}${project.district}${project.address}`;
     const previousLocation = previousProjects[project.id]?.location;
-    const canReusePrevious = previousLocation?.queryAddress === queryAddress;
-    const addressChanged = Boolean(previousLocation) && !canReusePrevious;
-    if ((!Object.hasOwn(cache, project.id) && !canReusePrevious) || addressChanged) {
+    const cacheHasEntry = Object.hasOwn(cache, project.id);
+    const refreshGeocode = shouldRefreshGeocode(previousLocation, queryAddress, cache[project.id], cacheHasEntry);
+    if (refreshGeocode) {
+      if (!geocoder) {
+        if (previousLocation && previousLocation.queryAddress !== queryAddress && cacheHasEntry) {
+          cache[project.id] = null;
+          changed = true;
+        }
+        continue;
+      }
       let matchedResult = null;
       for (const query of geocodeQueries(project)) {
-      const params = new URLSearchParams({
-        q: query,
-        format: "jsonv2",
-        limit: "1",
-        countrycodes: "tw",
-        addressdetails: "1",
-        "accept-language": "zh-TW,zh-Hant",
-      });
-      const response = await fetch(`https://nominatim.openstreetmap.org/search?${params}`, {
-        headers: { "User-Agent": userAgent, Referer: "https://jujian-north-taiwan.baka0406.chatgpt.site" },
-      });
-      if (!response.ok) throw new Error(`Nominatim ${response.status} for ${project.id}`);
-      const results = await response.json();
+        const params = new URLSearchParams({
+          q: query,
+          format: "jsonv2",
+          limit: "1",
+          countrycodes: "tw",
+          addressdetails: "1",
+          "accept-language": "zh-TW,zh-Hant",
+        });
+        const response = await fetch(`${geocoder.url}?${params}`, {
+          headers: { "User-Agent": userAgent, Referer: "https://jujian-north-taiwan.baka0406.chatgpt.site" },
+          signal: AbortSignal.timeout(30_000),
+        });
+        if (!response.ok) throw new Error(`Nominatim ${response.status} for ${project.id}`);
+        const results = await response.json();
         if (geocodeMatches(project, results[0])) {
           matchedResult = results[0];
           break;
         }
-        await sleep(1100);
+        await sleep(geocoder.intervalMs);
       }
       cache[project.id] = matchedResult;
+      refreshedProjectIds.add(project.id);
       changed = true;
       console.log(`[${index + 1}/${projects.length}] 定位 ${project.name}: ${matchedResult?.display_name || "無結果"}`);
       await writeFile(geocodeCachePath, `${JSON.stringify(cache, null, 2)}\n`, "utf8");
-      await sleep(1100);
+      await sleep(geocoder.intervalMs);
     }
   }
 
@@ -171,34 +264,98 @@ async function geocodeProjects(projects, previousProjects) {
   return Object.fromEntries(projects.map((project) => {
     const queryAddress = `${project.city}${project.district}${project.address}`;
     const previousLocation = previousProjects[project.id]?.location;
-    if (!Object.hasOwn(cache, project.id) && previousLocation?.queryAddress === queryAddress) {
-      return [project.id, previousLocation];
+    const sameAddress = previousLocation?.queryAddress === queryAddress;
+    const result = refreshedProjectIds.has(project.id) || !previousLocation || sameAddress ? cache[project.id] : null;
+    if (usableGeocodeResult(result)) {
+      return [project.id, {
+        latitude: Number(result.lat),
+        longitude: Number(result.lon),
+        ...locationConfidence(project, result),
+        queryAddress,
+      }];
     }
-    const result = cache[project.id];
-    const fallback = fallbackPoint(project);
-    const latitude = result ? Number(result.lat) : fallback.latitude;
-    const longitude = result ? Number(result.lon) : fallback.longitude;
-    return [project.id, { latitude, longitude, ...locationConfidence(project, result), queryAddress }];
+    if (sameAddress) return [project.id, previousLocation];
+    return [project.id, fallbackLocation(project, queryAddress)];
   }));
 }
 
-function parseCrossRoads(xml) {
-  return [...xml.matchAll(/<crossRoad>\s*<name>([^<]+)<\/name>\s*<x>([^<]+)<\/x>\s*<y>([^<]+)<\/y>\s*<\/crossRoad>/gu)]
-    .map((match) => ({ name: match[1], longitude: Number(match[2]), latitude: Number(match[3]) }));
+async function fetchNlscText(url, label) {
+  let lastError;
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
+    try {
+      const response = await fetch(url, { headers: { "User-Agent": userAgent }, signal: AbortSignal.timeout(30_000) });
+      if (!response.ok) throw new Error(`${response.status}`);
+      return await response.text();
+    } catch (error) {
+      lastError = error;
+      if (attempt < 3) await sleep(attempt * 750);
+    }
+  }
+  throw new Error(`NLSC ${label} 查詢失敗：${lastError?.message || "未知錯誤"}`);
 }
 
-async function refineOfficialIntersections(locations) {
+async function loadNlscAdminCodes(projects) {
+  const cached = await readJson(nlscAdminCachePath, { counties: {}, towns: {} });
+  let changed = false;
+  if (!Object.keys(cached.counties || {}).length) {
+    cached.counties = parseCountyItems(await fetchNlscText("https://api.nlsc.gov.tw/other/ListCounty", "縣市代碼"));
+    changed = true;
+  }
+  const cities = [...new Set(projects.map((project) => project.city))];
+  for (const city of cities) {
+    const county = cached.counties[city];
+    if (!county || Object.keys(cached.towns?.[city] || {}).length) continue;
+    cached.towns ||= {};
+    cached.towns[city] = parseTownItems(await fetchNlscText(`https://api.nlsc.gov.tw/other/ListTown/${county}`, `${city}行政區代碼`));
+    changed = true;
+  }
+  if (changed) {
+    cached.updatedAt = generatedAt;
+    await writeFile(nlscAdminCachePath, `${JSON.stringify(cached, null, 2)}\n`, "utf8");
+  }
+  return cached;
+}
+
+function canUseOfficialIntersection(location) {
+  return ["region-center", "catalogue-fallback", "nominatim-road"].includes(location?.method);
+}
+
+async function refineOfficialIntersections(locations, projects) {
   const cache = await readJson(intersectionCachePath, {});
-  for (const [projectId, spec] of Object.entries(officialIntersectionSpecs)) {
+  const admin = await loadNlscAdminCodes(projects);
+  const automaticSpecs = Object.fromEntries(projects.flatMap((project) => {
+    if (officialIntersectionSpecs[project.id] || !canUseOfficialIntersection(locations[project.id])) return [];
+    const roads = extractIntersectionRoads(project.address);
+    const county = admin.counties?.[project.city];
+    const town = admin.towns?.[project.city]?.[project.district];
+    return roads && county && town ? [[project.id, { county, town, road: roads[0], cross: roads[1] }]] : [];
+  }));
+  const specs = { ...automaticSpecs, ...officialIntersectionSpecs };
+  let matchedCount = 0;
+  let fetchedCount = 0;
+  const intervalMs = Math.max(100, Number(process.env.JUJIAN_NLSC_INTERVAL_MS || 200));
+
+  async function crossRoadsFor(spec) {
     const cacheKey = `${spec.county}/${spec.town}/${spec.road}`;
     if (!Object.hasOwn(cache, cacheKey)) {
       const url = `https://api.nlsc.gov.tw/idc/ListRoadCross/${spec.county}/${spec.town}/${encodeURIComponent(spec.road)}`;
-      const response = await fetch(url, { headers: { "User-Agent": userAgent } });
-      if (!response.ok) throw new Error(`NLSC ${response.status}: ${spec.road}`);
-      cache[cacheKey] = parseCrossRoads(await response.text());
+      cache[cacheKey] = parseCrossRoads(await fetchNlscText(url, `${spec.road}路口`));
+      fetchedCount += 1;
       await writeFile(intersectionCachePath, `${JSON.stringify(cache, null, 2)}\n`, "utf8");
+      await sleep(intervalMs);
     }
-    const match = cache[cacheKey].find((crossRoad) => crossRoad.name === spec.cross);
+    return cache[cacheKey];
+  }
+
+  for (const [projectId, spec] of Object.entries(specs)) {
+    let match = findCrossRoad(await crossRoadsFor(spec), spec.cross);
+    let matchedRoad = spec.road;
+    let matchedCross = spec.cross;
+    if (!match && !officialIntersectionSpecs[projectId]) {
+      match = findCrossRoad(await crossRoadsFor({ ...spec, road: spec.cross }), spec.road);
+      matchedRoad = spec.cross;
+      matchedCross = spec.road;
+    }
     if (!match) {
       console.warn(`官方路口尚未匹配：${spec.road} × ${spec.cross}`);
       continue;
@@ -210,8 +367,11 @@ async function refineOfficialIntersections(locations) {
       method: "nlsc-official-intersection",
       label: "官方路口定位",
       queryAddress: locations[projectId].queryAddress,
+      officialReference: { provider: "NLSC", road: matchedRoad, crossRoad: matchedCross },
     };
+    matchedCount += 1;
   }
+  console.log(`NLSC 官方路口：${matchedCount}/${Object.keys(specs).length} 案匹配，本次新增 ${fetchedCount} 筆道路快取`);
   return locations;
 }
 
@@ -300,7 +460,7 @@ async function loadOverpass() {
 async function loadNominatimAmenities() {
   const cache = await readJson(nominatimAmenitiesCachePath, {});
   for (const [category, query] of Object.entries(nominatimAmenityQueries)) {
-    if (cache[category]?.length) continue;
+    if (cache[category]?.length || !geocoder) continue;
     const params = new URLSearchParams({
       q: query,
       format: "jsonv2",
@@ -309,14 +469,14 @@ async function loadNominatimAmenities() {
       viewbox: "121.335,25.110,121.420,25.025",
       "accept-language": "zh-TW,zh-Hant",
     });
-    const response = await fetch(`https://nominatim.openstreetmap.org/search?${params}`, {
+    const response = await fetch(`${geocoder.url}?${params}`, {
       headers: { "User-Agent": userAgent, Referer: "https://jujian-north-taiwan.baka0406.chatgpt.site" },
       signal: AbortSignal.timeout(30_000),
     });
     if (!response.ok) throw new Error(`Nominatim amenities ${response.status}: ${category}`);
     cache[category] = await response.json();
     await writeFile(nominatimAmenitiesCachePath, `${JSON.stringify(cache, null, 2)}\n`, "utf8");
-    await sleep(1100);
+    await sleep(geocoder.intervalMs);
   }
 
   return Object.entries(cache).flatMap(([category, results]) => results.map((result) => ({
@@ -430,13 +590,17 @@ async function main() {
   await mkdir(cacheDirectory, { recursive: true });
   const projectDataset = await readJson(projectsPath, null);
   const previousDataset = await readJson(outputPath, { projects: {} });
-  const geocoded = await geocodeProjects(projectDataset.projects, previousDataset.projects || {});
-  const locations = await applyManualOverrides(await refineOfficialIntersections(geocoded));
+  const { locationProjects, scoredProjects } = splitAmenityWork(projectDataset.projects);
+  const geocoded = await geocodeProjects(locationProjects, previousDataset.projects || {});
+  const locations = await applyManualOverrides(await refineOfficialIntersections(geocoded, locationProjects));
   const [overpass, nominatimAmenities] = await Promise.all([loadOverpass(), loadNominatimAmenities()]);
   const pois = normalizePois({ elements: [...overpass.elements, ...nominatimAmenities] });
-  const projects = {};
+  const scoredProjectIds = new Set(scoredProjects.map((project) => project.id));
+  const projects = Object.fromEntries(locationProjects
+    .filter((project) => !scoredProjectIds.has(project.id))
+    .map((project) => [project.id, unavailableAmenityProject(locations[project.id])]));
 
-  for (const project of projectDataset.projects) {
+  for (const project of scoredProjects) {
     const location = locations[project.id];
     const nearest = Object.fromEntries(Object.keys(categories).map((category) => [category, nearestPoi(location, pois, category)]));
     const rawScore = scoreRules.reduce((total, rule) => total + categoryScore(nearest[rule.category]?.distanceMeters, rule), 0);
@@ -467,7 +631,11 @@ async function main() {
       distance: "兩點間直線距離",
       walkingMetersPerMinute: 80,
       disclaimer: "距離與步行時間為直線距離換算，未考慮實際道路、坡度、圍牆、紅綠燈與出入口，不可當作導航時間。",
-      locationDisclaimer: "建案位置依官方申報地址查找；地址僅到道路或路口時，位置會標示為估算，不代表精確基地界址。",
+      locationDisclaimer: "建案位置先讀官方申報街道；兩條道路可由國土測繪中心資料完全匹配時，顯示官方路口參考點。路口與道路點都不代表精確基地界址。",
+      locationSources: [
+        { name: "內政部預售屋建案備查資料", url: "https://data.gov.tw/dataset/176351", role: "申報街道與基地" },
+        { name: "國土測繪中心路口 API", url: "https://data.gov.tw/dataset/167920", role: "路口坐標" },
+      ],
       scoreDisclaimer: "只有官方路口、門牌或可辨識道路位置才顯示機能分數；區域估算位置不顯示分數。",
       scoreRules,
     },
@@ -479,8 +647,8 @@ async function main() {
 
   await writeFile(outputPath, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
   const counts = Object.keys(categories).map((category) => `${categories[category].label} ${pois.filter((poi) => poi.category === category).length}`).join("、");
-  console.log(`完成：${projectDataset.projects.length} 個建案，${pois.length} 個設施（${counts}）`);
+  console.log(`完成：定位 ${locationProjects.length} 個建案，機能評估 ${scoredProjects.length} 個建案，${pois.length} 個設施（${counts}）`);
   console.log(`輸出：${outputPath}`);
 }
 
-await main();
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) await main();

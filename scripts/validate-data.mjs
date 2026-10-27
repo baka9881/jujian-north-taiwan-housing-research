@@ -1,3 +1,4 @@
+import { regionFor } from "./regions.mjs";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -29,9 +30,19 @@ fail((qualityAudits.reviewedProjectIds || []).every((id) => ids.includes(id)), "
 const expectedReviewedCount = qualityAudits.reviewedProjectIds?.length ?? Object.keys(qualityAudits.projects).length;
 fail(quality.summary.reviewedCount === expectedReviewedCount, "品質查核完成數與人工查核資料不同步");
 const amenityCategories = Object.keys(amenities.categories);
+const amenityProjects = Object.values(amenities.projects);
+const individualLocationProjects = amenityProjects.filter((project) => !["region-center", "catalogue-fallback"].includes(project.location.method)).length;
+const verifiedLocationProjects = amenityProjects.filter((project) => ["high", "medium"].includes(project.location.confidence)).length;
+const approximateLocationProjects = amenityProjects.filter((project) => project.location.confidence === "low").length;
+const districtOnlyLocationProjects = amenityProjects.filter((project) => project.location.confidence === "estimated").length;
 fail(amenityCategories.length === 10, "生活機能應包含 10 類設施");
 fail(["market", "park", "pharmacy", "parking"].every((category) => amenityCategories.includes(category)), "生活機能缺少市場、公園、藥局或停車場");
-fail(amenities.routeCoverage?.routedProjects === 31, "道路路線時間涵蓋數異常");
+fail(amenities.routeCoverage?.routedProjects === Object.values(amenities.projects).filter((project) => project.score !== null).length, "道路路線時間涵蓋數異常");
+fail(report.pipeline?.individualLocationProjects === individualLocationProjects, "更新報告的個別定位數不同步");
+fail(report.pipeline?.verifiedLocationProjects === verifiedLocationProjects, "更新報告的可信定位數不同步");
+fail(report.pipeline?.approximateLocationProjects === approximateLocationProjects, "更新報告的道路估算數不同步");
+fail(report.pipeline?.districtOnlyLocationProjects === districtOnlyLocationProjects, "更新報告的行政區彙整數不同步");
+fail(report.pipeline?.amenityScoredProjects === amenities.routeCoverage?.routedProjects, "更新報告的機能評估數不同步");
 fail(Object.keys(amenities.methodology?.profiles || {}).length === 4, "生活機能評分情境不完整");
 fail(amenities.methodology?.scoreFormula?.version === 2, "生活機能評分公式尚未升級");
 fail(Object.keys(amenities.methodology?.densityRules || {}).length === 10, "生活機能選擇數量規則不完整");
@@ -51,7 +62,13 @@ for (const [region, mapping] of Object.entries(regionalSupplySource.regionMappin
 }
 
 for (const project of projects.projects) {
+  fail(regionFor(project)?.city === project.city, `${project.name} 分區與縣市不一致`);
   fail(Boolean(project.priceEvidence?.status), `${project.name} 缺少價格查核狀態`);
+  fail(project.firstRegistrationDate === null || /^\d{4}-\d{2}-\d{2}$/u.test(project.firstRegistrationDate), `${project.name} 的首次登記日期格式無效`);
+  if (project.sourceIntegrity?.status === "repaired-unquoted-commas") {
+    fail(/地號/u.test(project.buildingLand), `${project.name} 修復後的基地欄位仍無效`);
+    fail(Boolean(project.permitDate) && !/^\d{4}-\d{2}-\d{2}$/u.test(project.permitNo), `${project.name} 修復後的建照欄位仍錯位`);
+  }
   fail(!project.price || project.price.count > 0, `${project.name} 的價格樣本數無效`);
   const amenity = amenities.projects[project.id];
   fail(Number.isFinite(amenity?.location?.latitude) && Number.isFinite(amenity?.location?.longitude), `${project.name} 缺少有效座標`);
