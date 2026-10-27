@@ -1118,3 +1118,50 @@ html,body { font-size:16px; line-height:1.5; -webkit-font-smoothing:antialiased;
   .for-sale-controls a { grid-column:1 / -1; }
   .for-sale-note { grid-column:auto; }
 }
+
+/* Separate finding current listings from researching historical records. */
+.site-header { grid-template-columns:180px 1fr 110px; }
+.site-header .home-navigation { display:flex; justify-content:center; gap:4px; }
+.site-header .home-navigation button { min-height:44px; padding:0 18px; color:#53656b; font-size:15px; white-space:nowrap; }
+.site-header .home-navigation button.active { color:#174e43; }
+.site-header .home-navigation button.active::after { background:#287b68; }
+.header-tools { justify-content:flex-end; }
+.for-sale-search { min-height:calc(100vh - 64px); display:block; padding:64px 20px 90px; border:0; background:linear-gradient(180deg,#edf6f1 0,#f7faf8 70%,#fff 100%); }
+.for-sale-inner { max-width:920px; margin:0 auto; padding:48px; border:1px solid #dcebe3; border-radius:20px; background:#fff; box-shadow:0 18px 48px rgba(31,71,55,.08); }
+.for-sale-intro > span { color:#287b68; font-size:13px; }
+.for-sale-intro h1 { margin:10px 0 12px; color:#163f36; font-size:clamp(28px,4vw,40px); line-height:1.25; letter-spacing:-.02em; }
+.for-sale-intro p { color:#526c64; font-size:16px; line-height:1.7; }
+.for-sale-controls { display:grid; grid-template-columns:1fr 1.5fr auto; align-items:end; gap:12px; margin-top:30px; }
+.for-sale-controls label { min-width:0; }
+.for-sale-controls label span { margin-bottom:8px; color:#334d44; font-size:14px; }
+.for-sale-controls select { width:100%; min-height:52px; padding:0 12px; border-radius:8px; font-size:16px; }
+.listing-types { min-width:0; margin:0; padding:0; border:0; }
+.listing-types legend { margin-bottom:8px; color:#334d44; font-size:14px; font-weight:700; }
+.listing-types > div { display:flex; gap:6px; }
+.listing-types button { flex:1 1 auto; min-height:52px; padding:0 10px; border:1px solid #b7cbc3; border-radius:8px; background:#fff; color:#36544a; cursor:pointer; font-size:14px; font-weight:700; white-space:nowrap; }
+.listing-types button[aria-pressed="true"] { border-color:#1f6656; background:#e7f4ed; color:#174e43; box-shadow:inset 0 0 0 1px #1f6656; }
+.for-sale-controls a { min-height:52px; gap:9px; padding:0 22px; border-radius:8px; font-size:15px; white-space:nowrap; }
+.for-sale-note { margin-top:16px; color:#5e736a; font-size:13px; line-height:1.7; }
+.history-invitation { max-width:920px; display:flex; align-items:center; justify-content:space-between; gap:20px; margin:20px auto 0; padding:25px 30px; border:1px solid #dfe8e3; border-radius:14px; background:rgba(255,255,255,.8); }
+.history-invitation h2 { margin:0 0 6px; color:#26463e; font-size:18px; }
+.history-invitation p { margin:0; color:#5c7068; font-size:14px; line-height:1.6; }
+.history-invitation button { flex:0 0 auto; min-height:44px; padding:0 16px; border:1px solid #b8d0c4; border-radius:8px; background:#fff; color:#1e5b4c; cursor:pointer; font-size:14px; font-weight:750; }
+.history-invitation button:hover { background:#edf7f2; }
+@media (max-width:760px) {
+  .site-header { grid-template-columns:auto 1fr auto; gap:4px; padding:0 8px; }
+  .site-brand { gap:5px; }
+  .site-brand > span { width:32px; height:32px; font-size:16px; }
+  .site-brand strong { font-size:15px; letter-spacing:0; }
+  .site-brand small { display:none; }
+  .site-header .home-navigation { display:flex; gap:0; }
+  .site-header .home-navigation button { padding:0 7px; font-size:12px; }
+  .site-header .home-navigation button.active::after { left:6px; right:6px; }
+  .header-tools button { min-width:48px; font-size:12px; }
+  .for-sale-search { min-height:calc(100vh - 58px); padding:28px 16px 60px; }
+  .for-sale-inner { padding:26px 20px; border-radius:16px; }
+  .for-sale-intro p { font-size:14px; }
+  .for-sale-controls { grid-template-columns:1fr; gap:16px; margin-top:24px; }
+  .for-sale-controls a { grid-column:auto; width:100%; }
+  .history-invitation { display:block; padding:20px; }
+  .history-invitation button { margin-top:14px; }
+}

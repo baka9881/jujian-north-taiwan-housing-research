@@ -17,28 +17,19 @@ async function render() {
   );
 }
 
-test("opens with scannable project results and a compact result toolbar", async () => {
+test("opens with clear paths for current listings and historical records", async () => {
   const response = await render();
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
 
   const html = await response.text();
   assert.match(html, /<title>居鑑｜北台灣建案履歷<\/title>/);
-  assert.ok(html.includes(String(catalogueSize)));
-  assert.match(html, /全部建案/);
-  assert.match(html, /aria-label="搜尋結果"/);
-  assert.match(html, /北台灣(?:<!-- -->)?歷史建案備查/);
   assert.match(html, /找目前刊登的房屋/);
-  assert.match(html, /僅涵蓋信義房屋/);
+  assert.match(html, /查建案履歷/);
+  assert.match(html, /房源由信義房屋提供/);
+  assert.match(html, /不代表建案仍在銷售/);
   assert.match(html, /Taipei-city\/presale\/default-desc\/1/);
-  assert.equal((html.match(/class="project-grid-card"/g) || []).length, 24);
-  assert.match(html, /aria-label="建案列表分頁"/);
-  assert.doesNotMatch(html, /class="project-placeholder"/);
-  assert.match(html, /搜尋區域、捷運、建案或建商/);
-  assert.match(html, /品質查核/);
-  assert.match(html, /案有成交資料/);
-  assert.doesNotMatch(html, /隱藏清單|顯示清單/);
-  assert.match(html, /機能/);
+  assert.doesNotMatch(html, /class="project-grid-card"/);
   assert.doesNotMatch(html, /data-map-engine="leaflet"/);
   assert.doesNotMatch(html, /class="map-project-card"/);
   assert.match(html, /lang="zh-Hant-TW"/);

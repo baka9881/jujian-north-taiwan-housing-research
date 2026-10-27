@@ -223,7 +223,7 @@ const listingCities = [
   { label: "新竹縣", code: "Hsinchu-county" },
 ] as const;
 
-function ForSaleSearch() {
+function ForSaleSearch({ onExploreHistory }: { onExploreHistory: () => void }) {
   const [cityCode, setCityCode] = useState<string>(listingCities[0].code);
   const [listingType, setListingType] = useState<"new-listings" | "resale-listings">("new-listings");
   const suffix = listingType === "new-listings"
@@ -232,17 +232,23 @@ function ForSaleSearch() {
   const url = `https://www.sinyi.com.tw/buy/list/${cityCode}/${suffix}`;
 
   return <section className="for-sale-search" aria-labelledby="for-sale-heading">
-    <div className="for-sale-intro">
-      <span>房源搜尋</span>
-      <h2 id="for-sale-heading">找目前刊登的房屋</h2>
-      <p>前往信義房屋搜尋預售屋或屋齡 5 年內的電梯大樓中古屋。</p>
+    <div className="for-sale-inner">
+      <div className="for-sale-intro">
+        <span>北台灣找房</span>
+        <h1 id="for-sale-heading">找目前刊登的房屋</h1>
+        <p>選擇地區和房屋類型，前往信義房屋查看在售物件。</p>
+      </div>
+      <div className="for-sale-controls">
+        <label><span>想找哪裡？</span><select value={cityCode} onChange={(event) => setCityCode(event.target.value)} aria-label="在售房源縣市">{listingCities.map((city) => <option key={city.code} value={city.code}>{city.label}</option>)}</select></label>
+        <fieldset className="listing-types"><legend>想看哪種房屋？</legend><div><button type="button" aria-pressed={listingType === "new-listings"} onClick={() => setListingType("new-listings")}>預售屋</button><button type="button" aria-pressed={listingType === "resale-listings"} onClick={() => setListingType("resale-listings")}>5 年內電梯大樓</button></div></fieldset>
+        <a href={url} target="_blank" rel="noopener noreferrer" aria-label="前往信義房屋看房源（在新分頁開啟）">前往信義房屋看房源 <span aria-hidden="true">↗</span></a>
+      </div>
+      <p className="for-sale-note">房源由信義房屋提供，將在新分頁開啟。請在外站確認刊登狀態、用途、屋齡及電梯條件。</p>
     </div>
-    <div className="for-sale-controls">
-      <label><span>縣市</span><select value={cityCode} onChange={(event) => setCityCode(event.target.value)} aria-label="在售房源縣市">{listingCities.map((city) => <option key={city.code} value={city.code}>{city.label}</option>)}</select></label>
-      <label><span>房屋類型</span><select value={listingType} onChange={(event) => setListingType(event.target.value as "new-listings" | "resale-listings")} aria-label="在售房源類型"><option value="new-listings">預售屋</option><option value="resale-listings">5 年內電梯大樓中古屋</option></select></label>
-      <a href={url} target="_blank" rel="noopener noreferrer">前往信義房屋搜尋 ↗</a>
+    <div className="history-invitation">
+      <div><h2>想了解建案背景？</h2><p>查看政府歷史備查、成交紀錄與生活機能。這些資料不代表建案仍在銷售。</p></div>
+      <button type="button" onClick={onExploreHistory}>查建案履歷 <span aria-hidden="true">→</span></button>
     </div>
-    <p className="for-sale-note">房源由外站提供，僅涵蓋信義房屋；刊登狀態、用途、屋齡及電梯條件請至外站逐筆確認。本頁下方為歷史建案備查，並非在售清單。</p>
   </section>;
 }
 
@@ -569,6 +575,7 @@ export default function Home() {
   const [sortBy, setSortBy] = useState<SortKey>("newest");
   const [listPage, setListPage] = useState({ key: "", number: 1 });
   const [viewMode, setViewMode] = useState<ViewMode>("list");
+  const [homeMode, setHomeMode] = useState<"sale" | "history">("sale");
   const [selectedId, setSelectedId] = useState(projects[0].id);
   const [mapPreviewId, setMapPreviewId] = useState<string | null>(null);
   const [builderMapFocus, setBuilderMapFocus] = useState<{ id: string; sequence: number; camera?: MapCamera } | null>(null);
@@ -644,7 +651,7 @@ export default function Home() {
   const builderPricedCount = builderProjects.filter((project) => project.price).length;
   const locationFilterActive = city !== "全部" || district !== "全部" || region !== "全部";
   const advancedFilterCount = Number(locationFilterActive) + Number(stageFilter !== "all") + Number(budgetFilter !== "all") + Number(priceOnly) + Number(minHouseholds > 0) + Number(amenityFilter !== "all") + Number(qualityFilter !== "all");
-  const visibleFilterCount = advancedFilterCount;
+  const visibleFilterCount = advancedFilterCount + Number(Boolean(query.trim()));
   const activeNearestPois = active.amenity.score === null
     ? []
     : amenityEntries
@@ -682,7 +689,7 @@ export default function Home() {
       ? region
       : city !== "全部" ? city : "全部地區";
   const scopeTitle = district !== "全部"
-    ? `${city}・${district}`
+    ? `${city !== "全部" ? `${city}・` : ""}${district}`
     : region !== "全部"
       ? region
       : city !== "全部" ? city : "北台灣";
@@ -714,12 +721,37 @@ export default function Home() {
     return () => {
       document.removeEventListener("keydown", onKey);
       document.body.style.overflow = previousOverflow;
-      if (suppressModalScrollRestore.current) return;
+      if (suppressModalScrollRestore.current) { suppressModalScrollRestore.current = false; return; }
       if (!previousFocus?.isConnected) return;
       previousFocus.focus({ preventScroll: true });
       window.scrollTo({ top: previousScrollY, left: 0, behavior: "instant" });
       requestAnimationFrame(() => window.scrollTo({ top: previousScrollY, left: 0, behavior: "instant" }));
     };
+  }, [detailOpen, compareOpen, methodOpen, advancedFiltersOpen]);
+
+  // The server and first client render both start on the sale view. Apply the
+  // fragment after hydration so direct links to history do not mismatch SSR.
+  useEffect(() => {
+    let cancelled = false;
+    queueMicrotask(() => {
+      if (!cancelled) setHomeMode(window.location.hash === "#history" ? "history" : "sale");
+    });
+    return () => { cancelled = true; };
+  }, []);
+
+  useEffect(() => {
+    function onHashChange() {
+      if (detailOpen || compareOpen || methodOpen || advancedFiltersOpen) suppressModalScrollRestore.current = true;
+      setHomeMode(window.location.hash === "#history" ? "history" : "sale");
+      setDetailOpen(false);
+      setCompareOpen(false);
+      setMethodOpen(false);
+      setAdvancedFiltersOpen(false);
+      setMapPreviewId(null);
+      window.scrollTo({ top: 0, behavior: "instant" });
+    }
+    window.addEventListener("hashchange", onHashChange);
+    return () => window.removeEventListener("hashchange", onHashChange);
   }, [detailOpen, compareOpen, methodOpen, advancedFiltersOpen]);
 
   useEffect(() => {
@@ -810,20 +842,17 @@ export default function Home() {
     requestAnimationFrame(() => document.querySelector(".list-workspace")?.scrollIntoView({ block: "start", behavior: "instant" }));
   }
 
-  function returnToOverview() {
-    suppressModalScrollRestore.current = true;
-    clearFilters();
-    setListPage({ key: "", number: 1 });
+  function changeHomeMode(mode: "sale" | "history") {
+    const currentUrlMode = window.location.hash === "#history" ? "history" : "sale";
+    if (mode !== currentUrlMode) window.history.pushState(null, "", mode === "history" ? "#history" : "#sale");
+    if (detailOpen || compareOpen || methodOpen || advancedFiltersOpen) suppressModalScrollRestore.current = true;
+    setHomeMode(mode);
+    setDetailOpen(false);
     setCompareOpen(false);
     setMethodOpen(false);
-    switchView("list", true);
-    // The header link can retain focus while the filter state re-renders. A
-    // second frame makes the reset deterministic even when the browser tries
-    // to restore the focused element's scroll position.
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-      suppressModalScrollRestore.current = false;
-    }));
+    setAdvancedFiltersOpen(false);
+    setMapPreviewId(null);
+    window.scrollTo({ top: 0, behavior: "instant" });
   }
 
   function selectBuilderProject(project: Project) {
@@ -858,23 +887,28 @@ export default function Home() {
   }
 
   return (
-    <main className={`app-shell ${viewMode === "map" ? "map-mode" : "list-mode"} ${compareIds.length > 0 ? "has-compare" : ""}`}>
+    <main className={`app-shell ${homeMode === "history" && viewMode === "map" ? "map-mode" : "list-mode"} ${homeMode === "history" && compareIds.length > 0 ? "has-compare" : ""}`}>
       <header className="site-header">
-        <a className="site-brand" href="#top" aria-label="居鑑首頁，查看全部建案" onClick={(event) => { event.preventDefault(); event.currentTarget.blur(); returnToOverview(); }}>
+        <a className="site-brand" href="#top" aria-label="居鑑首頁，找在售房屋" onClick={(event) => { event.preventDefault(); event.currentTarget.blur(); changeHomeMode("sale"); }}>
           <span>居</span>
           <div><strong>居鑑</strong><small>建案履歷資料庫</small></div>
         </a>
-        <span className="site-area-label">桃園・新竹・雙北</span>
+        <nav className="home-navigation" aria-label="主要功能">
+          <button type="button" className={homeMode === "sale" ? "active" : ""} aria-current={homeMode === "sale" ? "page" : undefined} onClick={() => changeHomeMode("sale")}>找在售房屋</button>
+          <button type="button" className={homeMode === "history" ? "active" : ""} aria-current={homeMode === "history" ? "page" : undefined} onClick={() => changeHomeMode("history")}>查建案履歷</button>
+        </nav>
         <div className="header-tools">
-          <span><i />歷史建案備查 {projects.length} 案</span>
-          <button type="button" onClick={() => setMethodOpen(true)}>資料說明</button>
+          {homeMode === "history" && <button type="button" onClick={() => setMethodOpen(true)}>資料說明</button>}
         </div>
       </header>
 
-      <section className={`filter-bar ${viewMode === "map" ? "map-toolbar" : ""}`} id="top" aria-label="搜尋篩選">
+      <div hidden={homeMode !== "sale"}><ForSaleSearch onExploreHistory={() => changeHomeMode("history")} /></div>
+
+      {homeMode === "history" && <>
+      <section className={`filter-bar ${viewMode === "map" ? "map-toolbar" : ""}`} id="top" aria-label="歷史建案搜尋篩選">
         <label className="global-search">
           <InterfaceIcon name="search" />
-          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="搜尋區域、捷運、建案或建商" aria-label="搜尋區域、捷運、建案或建商" />
+          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="搜尋歷史建案、地區或建商" aria-label="搜尋歷史建案、地區或建商" />
           {query && <button type="button" onClick={() => setQuery("")} aria-label="清除搜尋">×</button>}
         </label>
         <button type="button" className={`primary-filter-button ${advancedFilterCount ? "active" : ""}`} aria-label={`篩選建案，目前 ${advancedFilterCount} 個條件`} aria-expanded={advancedFiltersOpen} onClick={() => setAdvancedFiltersOpen(true)}>
@@ -883,12 +917,10 @@ export default function Home() {
         {viewMode === "map" && <><div className="map-toolbar-result" aria-live="polite"><strong>{filtered.length.toLocaleString("zh-TW")}</strong><span>案</span></div><button type="button" className="map-toolbar-list" onClick={() => switchView("list")}><InterfaceIcon name="list" />列表</button></>}
       </section>
 
-      {viewMode === "list" && <ForSaleSearch />}
-
       {advancedFiltersOpen && <>
         <button type="button" className="filter-backdrop" aria-label="關閉篩選" onClick={() => setAdvancedFiltersOpen(false)} />
         <section className="advanced-filter-panel" role="dialog" aria-modal="true" aria-label="篩選建案">
-          <header><div><span>縮小搜尋範圍</span><strong>篩選建案</strong><small>先選地區，再加入真正需要的條件</small></div><button type="button" onClick={() => setAdvancedFiltersOpen(false)}>關閉</button></header>
+          <header><div><span>縮小搜尋範圍</span><strong>篩選建案</strong><small>條件會立即生效，關閉後仍會保留。</small></div><button type="button" onClick={() => setAdvancedFiltersOpen(false)}>關閉</button></header>
           <div className="filter-panel-body">
             <fieldset><legend>地區</legend><div className="filter-panel-grid">
               <label><span>縣市</span><select aria-label="縣市" value={city} onChange={(event) => { setCity(event.target.value); setRegion("全部"); setDistrict("全部"); setMapPreviewId(null); setDetailOpen(false); }}><option>全部</option>{[...new Set(regionConfig.regions.map((item) => item.city))].map((name) => <option key={name}>{name}</option>)}</select></label>
@@ -896,8 +928,8 @@ export default function Home() {
               <label><span>生活圈</span><select aria-label="生活圈" value={region} onChange={(event) => { setRegion(event.target.value); setDistrict("全部"); setMapPreviewId(null); setDetailOpen(false); }}><option>全部</option>{regionConfig.regions.filter((item) => city === "全部" || item.city === city).map((item) => <option key={item.id}>{item.label}</option>)}</select></label>
             </div></fieldset>
             <fieldset><legend>價格與基本條件</legend><div className="filter-panel-grid">
-              <label><span>每坪成交價</span><select value={budgetFilter} onChange={(event) => { setBudgetFilter(event.target.value as BudgetFilter); }} aria-label="每坪成交預算"><option value="all">不限</option><option value="under50">50 萬以下</option><option value="50to60">50–60 萬</option><option value="60plus">60 萬以上</option></select></label>
-              <label><span>首次登記狀態</span><select value={stageFilter} onChange={(event) => { setStageFilter(event.target.value as StageFilter); }} aria-label="首次登記狀態"><option value="all">全部</option><option value="presale">尚無首次登記資料</option><option value="completed">已首次登記</option></select></label>
+              <label><span>歷史每坪成交價</span><select value={budgetFilter} onChange={(event) => { setBudgetFilter(event.target.value as BudgetFilter); }} aria-label="每坪成交預算"><option value="all">不限</option><option value="under50">50 萬以下</option><option value="50to60">50–60 萬</option><option value="60plus">60 萬以上</option></select></label>
+              <label><span>首次登記資料（非銷售狀態）</span><select value={stageFilter} onChange={(event) => { setStageFilter(event.target.value as StageFilter); }} aria-label="首次登記狀態"><option value="all">全部</option><option value="presale">尚無首次登記資料</option><option value="completed">已首次登記</option></select></label>
               <label><span>社區戶數</span><select aria-label="社區戶數" value={minHouseholds} onChange={(event) => { setMinHouseholds(Number(event.target.value)); }}><option value="0">不限</option><option value="100">100 戶以上</option><option value="300">300 戶以上</option><option value="500">500 戶以上</option></select></label>
               <button type="button" className={`price-toggle ${priceOnly ? "active" : ""}`} aria-pressed={priceOnly} onClick={() => { setPriceOnly((value) => !value); }}><span>{priceOnly ? <InterfaceIcon name="check" /> : null}</span>只看有成交資料</button>
             </div></fieldset>
@@ -906,12 +938,12 @@ export default function Home() {
               <label><span>品質查核</span><select aria-label="品質查核" value={qualityFilter} onChange={(event) => { setQualityFilter(event.target.value as QualityFilter); }}><option value="all">不限</option><option value="defect">有實際瑕疵履歷</option><option value="official-result">有官方查核結果</option><option value="attention">有需注意事項</option><option value="no-event">已查核、無刊登事件</option></select></label>
             </div></fieldset>
           </div>
-          <footer><button type="button" className="panel-clear" disabled={visibleFilterCount === 0} onClick={() => { clearFilterCriteria(false); setMapPreviewId(null); setDetailOpen(false); }}>重設條件</button><button type="button" className="panel-apply" onClick={() => setAdvancedFiltersOpen(false)}>查看 {baseFiltered.length.toLocaleString("zh-TW")} 個建案</button></footer>
+          <footer><button type="button" className="panel-clear" disabled={advancedFilterCount === 0} onClick={() => { clearFilterCriteria(false); setMapPreviewId(null); setDetailOpen(false); }}>重設條件</button><button type="button" className="panel-apply" onClick={() => setAdvancedFiltersOpen(false)}>查看 {baseFiltered.length.toLocaleString("zh-TW")} 個建案</button></footer>
         </section>
       </>}
 
       {viewMode === "list" && <section className="results-toolbar" aria-label="搜尋結果">
-        <div className="results-summary"><h1>{scopeTitle}歷史建案備查</h1><p><strong>{filtered.length.toLocaleString("zh-TW")}</strong> 個結果 <span>{pricedCount.toLocaleString("zh-TW")} 案有成交資料</span></p></div>
+        <div className="results-summary"><h1>{scopeTitle}歷史建案履歷</h1><p><strong>{filtered.length.toLocaleString("zh-TW")}</strong> 筆備查資料 <span>不代表目前在售 · {pricedCount.toLocaleString("zh-TW")} 案有歷史成交資料</span></p></div>
         <div className="results-actions">
           <label className="sort-control"><span>排序</span><select aria-label="建案排序" value={sortBy} onChange={(event) => setSortBy(event.target.value as SortKey)}><option value="newest">最新備查</option><option value="priceLow">單價低到高</option><option value="priceHigh">單價高到低</option><option value="households">戶數多到少</option><option value="quality">品質查核結果</option></select></label>
           <div className="view-switch" aria-label="檢視模式">
@@ -920,7 +952,7 @@ export default function Home() {
           </div>
         </div>
       </section>}
-      {visibleFilterCount > 0 && <div className="active-filter-list" aria-label="已套用條件"><span>已套用</span>{district !== "全部" ? <button type="button" onClick={() => { setDistrict("全部"); }}>地區：{city}・{district} ×</button> : region !== "全部" ? <button type="button" onClick={() => { setRegion("全部"); }}>生活圈：{region} ×</button> : city !== "全部" ? <button type="button" onClick={() => { setCity("全部"); }}>縣市：{city} ×</button> : null}{budgetFilter !== "all" && <button type="button" onClick={() => setBudgetFilter("all")}>單價：{budgetFilter === "under50" ? "50 萬以下" : budgetFilter === "50to60" ? "50–60 萬" : "60 萬以上"} ×</button>}{stageFilter !== "all" && <button type="button" onClick={() => setStageFilter("all")}>{stageFilter === "presale" ? "尚無首次登記資料" : "已首次登記"} ×</button>}{priceOnly && <button type="button" onClick={() => setPriceOnly(false)}>有成交資料 ×</button>}{minHouseholds > 0 && <button type="button" onClick={() => setMinHouseholds(0)}>{minHouseholds} 戶以上 ×</button>}{amenityFilter !== "all" && <button type="button" onClick={() => setAmenityFilter("all")}>{amenityFilter === "score80" ? "機能 80 分以上" : amenityFilter === "convenience500" ? "超商步行 10 分內" : amenityFilter === "pxmart1000" ? "全聯步行 20 分內" : "車站步行 15 分內"} ×</button>}{qualityFilter !== "all" && <button type="button" onClick={() => setQualityFilter("all")}>{qualityFilter === "defect" ? "有瑕疵履歷" : qualityFilter === "official-result" ? "有官方結果" : qualityFilter === "attention" ? "有需注意事項" : "已查核無刊登事件"} ×</button>}<button type="button" className="active-filter-clear" onClick={() => clearFilterCriteria()}>清除全部</button></div>}
+      {visibleFilterCount > 0 && <div className="active-filter-list" aria-label="已套用條件"><span>已套用</span>{query.trim() && <button type="button" onClick={() => setQuery("")}>搜尋：{query} ×</button>}{district !== "全部" ? <button type="button" onClick={() => { setDistrict("全部"); }}>地區：{city !== "全部" ? `${city}・` : ""}{district} ×</button> : region !== "全部" ? <button type="button" onClick={() => { setRegion("全部"); }}>生活圈：{region} ×</button> : city !== "全部" ? <button type="button" onClick={() => { setCity("全部"); }}>縣市：{city} ×</button> : null}{budgetFilter !== "all" && <button type="button" onClick={() => setBudgetFilter("all")}>單價：{budgetFilter === "under50" ? "50 萬以下" : budgetFilter === "50to60" ? "50–60 萬" : "60 萬以上"} ×</button>}{stageFilter !== "all" && <button type="button" onClick={() => setStageFilter("all")}>{stageFilter === "presale" ? "尚無首次登記資料" : "已首次登記"} ×</button>}{priceOnly && <button type="button" onClick={() => setPriceOnly(false)}>有成交資料 ×</button>}{minHouseholds > 0 && <button type="button" onClick={() => setMinHouseholds(0)}>{minHouseholds} 戶以上 ×</button>}{amenityFilter !== "all" && <button type="button" onClick={() => setAmenityFilter("all")}>{amenityFilter === "score80" ? "機能 80 分以上" : amenityFilter === "convenience500" ? "超商步行 10 分內" : amenityFilter === "pxmart1000" ? "全聯步行 20 分內" : "車站步行 15 分內"} ×</button>}{qualityFilter !== "all" && <button type="button" onClick={() => setQualityFilter("all")}>{qualityFilter === "defect" ? "有瑕疵履歷" : qualityFilter === "official-result" ? "有官方結果" : qualityFilter === "attention" ? "有需注意事項" : "已查核無刊登事件"} ×</button>}<button type="button" className="active-filter-clear" onClick={clearFilters}>清除全部</button></div>}
       {viewMode === "map" ? (
         <MapExplorer key={`${mapScopeKey}:${builderMapFocus?.sequence ?? 0}`} projects={baseFiltered} scopeKey={mapScopeKey} city={city} district={district} region={region}
           districtCenters={regionConfig.districtMap.centers} initialCamera={builderMapFocus?.id === validMapPreviewId ? builderMapFocus.camera : mapCameraMemory[mapScopeKey]} onCameraChange={(camera) => { setMapCameraMemory((memory) => { const previous = memory[mapScopeKey]; return previous?.zoom === camera.zoom && previous.center[0] === camera.center[0] && previous.center[1] === camera.center[1] ? memory : { ...memory, [mapScopeKey]: camera }; }); }} selectedId={validMapPreviewId}
@@ -932,7 +964,7 @@ export default function Home() {
               <summary>圖層與說明</summary>
               <div className="map-tools-panel">
                 <section><strong>怎麼看地圖</strong><p>標籤顯示成交中位單價，沒有成交資料時顯示案名。數字加「案」表示附近建案群，點選即可查看清單。</p></section>
-                <section><strong>定位資料</strong><p>{mapReferenceCount.toLocaleString("zh-TW")} 案有道路／路口參考點，並非確認的建案入口。其餘建案可從「待定位」清單查看。</p></section>
+                <section><strong>定位資料</strong><p>{mapReferenceCount.toLocaleString("zh-TW")} 案有道路／路口參考點，並非確認的建案入口。其餘建案可從「位置待確認」清單查看。</p></section>
                 {amenityLayerCoverageCount > 0 && <section><strong>生活機能圖層</strong><p>{amenityLayerCoverageCount} 案完成設施定位。</p><div className="map-tools-layers">{amenityEntries.map(([category, meta]) => <button type="button" key={category} className={amenityLayers.includes(category) ? "active" : ""} onClick={(event) => { event.preventDefault(); toggleAmenityLayer(category); }}><i className={`poi-${category}`}>{meta.symbol}</i>{meta.label}</button>)}</div></section>}
               </div>
             </details>}
@@ -946,7 +978,7 @@ export default function Home() {
                   {!hasMapReferencePoint(active) && <p role="status">位置待核對，地圖未標示此案</p>}
                 </header>
                 <div className="map-preview-summary">
-                  <div><span>成交價格</span><strong>{priceText(active)}</strong><small>{priceComparison(active)}</small></div>
+                  <div><span>歷史成交價格</span><strong>{priceText(active)}</strong><small>{priceComparison(active)}</small></div>
                   <div className={activeDefectEvents.length || activeQualityAttention ? "attention" : "clear"}><span>有沒有問題</span><strong>{activeQualityHeadline}</strong></div>
                   <div className={activeAmenityScore === null ? "missing" : "clear"}><span>附近方便嗎</span><strong>{activeAmenityScore === null ? "資料待補" : `${activeAmenityScore} 分`}</strong>{activeAmenityScore !== null && <small>{amenityReliabilityText(active)} · 距離＋數量</small>}</div>
                   <div><span>每月固定支出</span><strong>依房型快速試算</strong></div>
@@ -976,7 +1008,7 @@ export default function Home() {
                         <h2>{project.name}</h2>
                         <p>{project.builder}</p>
                         <p className="card-location">{project.address || "坐落地址待補"}</p>
-                        <div className={`card-price ${project.price ? "" : "is-missing"}`}><strong>{priceText(project)}</strong>{project.price && <span>{project.price.count} 筆成交樣本</span>}</div>
+                        <div className={`card-price ${project.price ? "" : "is-missing"}`}><strong>{priceText(project)}</strong>{project.price && <span>{project.price.count} 筆歷史成交樣本</span>}</div>
                         <dl><div><dt>戶數</dt><dd>{project.households > 0 ? `${project.households} 戶` : "—"}</dd></div><div><dt>備查</dt><dd>{formatDate(project.declaredDate)}</dd></div><div><dt>生活機能</dt><dd>{project.amenity.score === null ? "待補" : amenityScoreText(project, amenityWeights)}</dd></div></dl>
                         <small className={confidence.covered === 4 ? "card-data-note complete" : "card-data-note"}>{confidence.covered}／4 項可核對</small>
                       </div>
@@ -995,7 +1027,7 @@ export default function Home() {
         <button type="button" className="detail-backdrop" aria-label="關閉建案詳情" onClick={() => setDetailOpen(false)} />
         <aside className="detail-drawer" role="dialog" aria-modal="true" aria-label={`${active.name} 詳細資料`}>
           <header><button type="button" onClick={() => setDetailOpen(false)} aria-label={viewMode === "map" ? "返回地圖" : "返回建案結果"}>← {viewMode === "map" ? "返回地圖" : "返回建案"}</button><div className="drawer-header-meta"><span>{active.region} · {active.city}{active.district}</span><b className={projectStage(active)}>{projectStageText(active)}</b></div><h2>{active.name}</h2></header>
-          <div className="drawer-glance"><strong>{priceText(active)}</strong><span>{active.households > 0 ? `${active.households} 戶` : "戶數待補"}</span><span>機能 {amenityScoreText(active, amenityWeights)}</span></div>
+          <div className="drawer-glance"><strong>歷史成交：{priceText(active)}</strong><span>{active.households > 0 ? `${active.households} 戶` : "戶數待補"}</span><span>機能 {amenityScoreText(active, amenityWeights)}</span></div>
           <nav className="detail-primary-nav">
             <button type="button" className={detailTab === "summary" ? "active" : ""} onClick={() => setDetailTab("summary")}>總覽</button>
             <button type="button" className={detailTab === "price" ? "active" : ""} onClick={() => setDetailTab("price")}>價格</button>
@@ -1010,7 +1042,7 @@ export default function Home() {
                 <div className="summary-heading"><h3>快速結論</h3><p>先看答案，需要時再查看資料來源。</p></div>
                 <div className="summary-answer-list">
                   <button type="button" className="price" onClick={() => setDetailTab("price")}>
-                    <span>成交價格</span><strong>{priceText(active)}</strong><small>{priceComparison(active)} · {active.price ? `${active.price.count} 筆官方樣本` : active.priceEvidence.statusLabel}</small><b>查看 ›</b>
+                    <span>歷史成交價格</span><strong>{priceText(active)}</strong><small>{priceComparison(active)} · {active.price ? `${active.price.count} 筆官方樣本` : active.priceEvidence.statusLabel}</small><b>查看 ›</b>
                   </button>
                   <button type="button" className={activeDefectEvents.length || activeQualityAttention ? "attention" : "clear"} onClick={() => setDetailTab("quality")}>
                     <span>房屋品質</span><strong>{activeQualityHeadline}</strong><small>{activeContractEvents.length ? `另有 ${activeContractEvents.length} 筆官方合約抽查` : active.quality.status === "reviewed" ? "官方資料已查過一輪" : "尚未完成官方資料查核"}</small><b>查看 ›</b>
@@ -1273,7 +1305,7 @@ export default function Home() {
             <div className="compare-heading"><span>跨區保留選案</span><h2>建案比較</h2><p>{compareProjects.length < 2 ? "再選一個建案，就能看出差異。" : "價格、品質、生活與資料可信度分開比較；成交涵蓋期間與筆數可能不同，不宜直接視為區域漲跌。"}</p></div>
             <p className="compare-table-hint">手機上左右滑動表格，可查看其他建案</p>
             <div className="table-scroll"><table><thead><tr><th>項目</th>{compareProjects.map((p) => <th key={p.id}>{p.name}<small>{p.city}{p.district} · {p.region} · {projectStageText(p)}</small></th>)}</tr></thead><tbody>
-              <tr><th>官方中位單價</th>{compareProjects.map((p) => <td key={p.id}><strong>{priceText(p)}</strong><small>{p.price ? `${priceSampleLabel(p.price)} · ${p.price.source}` : p.priceEvidence.statusLabel}</small></td>)}</tr>
+              <tr><th>歷史成交中位單價</th>{compareProjects.map((p) => <td key={p.id}><strong>{priceText(p)}</strong><small>{p.price ? `${priceSampleLabel(p.price)} · ${p.price.source}` : p.priceEvidence.statusLabel}</small></td>)}</tr>
               <tr><th>區域價格比較</th>{compareProjects.map((p) => <td key={p.id}>{priceComparison(p)}</td>)}</tr>
               <tr><th>品質紀錄</th>{compareProjects.map((p) => <td key={p.id}>{shortQualityText(p)}<small>{p.quality.contractEventCount ? `另有 ${p.quality.contractEventCount} 件契約查核` : p.quality.status === "reviewed" ? "官方來源已完成首輪查核" : "品質尚未查核"}</small></td>)}</tr>
               <tr><th>生活機能</th>{compareProjects.map((p) => { const score = amenityScoreFor(p, amenityWeights); return <td key={p.id}><strong>{amenityScoreText(p, amenityWeights)}</strong><small>{amenityGrade(score)}{p.amenity.nearest.station?.routes.walking ? ` · 車站步行 ${p.amenity.nearest.station.routes.walking.durationMinutes} 分` : ""}</small></td>; })}</tr>
@@ -1287,6 +1319,7 @@ export default function Home() {
       )}
 
       {methodOpen && <div className="modal-layer" role="presentation" onMouseDown={() => setMethodOpen(false)}><section className="method-modal" role="dialog" aria-modal="true" onMouseDown={(event) => event.stopPropagation()}><button className="modal-close" type="button" onClick={() => setMethodOpen(false)}>×</button><h2>資料怎麼看？</h2>      <details className="regional-coverage"><summary>桃園・新竹・雙北｜{projects.length} 案 · {regionConfig.regions.length} 分區 · 完整匯入範圍與待補資料</summary><p>目前使用{updateReportDataset.pipeline.sourceMode === "download" ? "官方下載資料" : "本機官方快照"}，匯入日期 {formatDate(dataset.generatedAt)} 不代表來源發布日期。已取消數量、戶數與申報日期門檻；現有來源中可安全辨識的住宅建案全部列入。另有 {updateReport.summary.ambiguousCount} 筆身分歧義待核對。來源仍不涵蓋所有既有社區。切換分區後仍可保留最多 3 案跨區比較。</p><p><strong>狀態口徑：</strong>這份名錄是 2021 年 7 月起的預售屋備查歷史，不是全區住宅存量，也不是目前仍在銷售的清單。{projects.filter((project) => project.firstRegistrationDate).length.toLocaleString("zh-TW")} 案已有首次登記日期；其餘 {(projects.length - projects.filter((project) => project.firstRegistrationDate).length).toLocaleString("zh-TW")} 案只代表官方欄位尚無首次登記資料，不能直接判定仍是預售屋。</p><p className="source-calendar">官方更新節奏：<a href="https://data.gov.tw/dataset/176351" target="_blank" rel="noreferrer">建案備查每月 1 日產製 ↗</a>；<a href="https://lvr.land.moi.gov.tw/jsp/index.jsp" target="_blank" rel="noreferrer">成交資料每月 1／11／21 日更新 ↗</a>。這是來源排程，不表示本目錄已取得最新一期；交易揭露有時間落差。</p></details><div><article><span>官方</span><strong>建案基本身分</strong><p>起造人、戶數、基地、建照與申報日期。</p></article><article><span className="coral">成交</span><strong>歷史季度＋本期實價樣本</strong><p>顯示筆數、區間與中位數；排除解約並去除重複，不代表目前開價。</p></article><article><span>機能</span><strong>十類設施＋道路路線時間</strong><p>以 OpenStreetMap 道路網估算步行、開車及平日 08:00 時間，並可依生活方式調整權重；不是即時導航。</p></article><article><span className="gray">品質</span><strong>實際瑕疵與契約查核分開</strong><p>只有能確認建案、問題與發生事實的證據才列入瑕疵履歷；契約違規不會被當成漏水證據。</p></article><article><span>維護</span><strong>安全更新已啟用</strong><p>更新於 {formatDate(updateReport.generatedAt)}。新案會自動加入；既有案不自動刪除，歧義資料不覆蓋。目前另保留 {updateReport.summary.historicalBacklogCount} 案歷史候選。</p></article></div><footer>{dataset.sources.map((source) => <a href={source.url} target="_blank" rel="noreferrer" key={source.url}>{source.name} ↗</a>)}<a href={amenityData.source.url} target="_blank" rel="noreferrer">OpenStreetMap ↗</a><a href={amenityData.methodology.routing.providerUrl} target="_blank" rel="noreferrer">Valhalla 路線矩陣 ↗</a><a href="https://judgment.judicial.gov.tw/readme.aspx?ot=in" target="_blank" rel="noreferrer">司法院裁判查詢 ↗</a></footer></section></div>}
+      </>}
     </main>
   );
 }
