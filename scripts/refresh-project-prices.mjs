@@ -1,3 +1,4 @@
+import { latestTransactions } from "./transaction-records.mjs";
 import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -37,6 +38,7 @@ function summarize(rows, fields, source) {
     low: roundOne(prices[0]),
     high: roundOne(prices.at(-1)),
     count: prices.length,
+    earliestDate: dates[0] || null,
     latestDate: dates.at(-1) || null,
     source,
   };
@@ -69,13 +71,13 @@ async function a7Transactions() {
   for (const file of files) {
     const rows = parseCsv(await readFile(path.join(a7Directory, file), "utf8"));
     for (const row of rows) {
-      if (row.鄉鎮市區 !== "龜山區" || String(row.解約情形 || "").trim()) continue;
+      if (row.鄉鎮市區 !== "龜山區") continue;
       const serial = String(row.編號 || "").trim() || `anonymous-${file}-${anonymous += 1}`;
       unique.set(serial, row);
     }
   }
   const grouped = new Map();
-  for (const row of unique.values()) {
+  for (const row of latestTransactions([...unique.values()])) {
     const key = normalizeName(row.建案名稱);
     const unitPrice = Number(row.單價元平方公尺);
     if (!key || !Number.isFinite(unitPrice) || unitPrice <= 0) continue;
@@ -90,12 +92,12 @@ async function linkouTransactions() {
   const unique = new Map();
   let anonymous = 0;
   for (const row of rows) {
-    if (row.district !== "林口區" || String(row.rps30 || "").trim()) continue;
+    if (row.district !== "林口區") continue;
     const serial = String(row.rps27 || "").trim() || `anonymous-${anonymous += 1}`;
     unique.set(serial, row);
   }
   const grouped = new Map();
-  for (const row of unique.values()) {
+  for (const row of latestTransactions([...unique.values()], { serial: "rps27", cancellation: "rps30", price: "rps22_amountsunitdollars" })) {
     const key = normalizeName(row.rps28);
     const unitPrice = Number(row.rps22_amountsunitdollars);
     if (!key || !Number.isFinite(unitPrice) || unitPrice <= 0) continue;
@@ -139,8 +141,10 @@ async function refreshPrices() {
   const regionStats = { A7: { matched: 0, unmatched: 0 }, 林口: { matched: 0, unmatched: 0 } };
 
   for (const project of payload.projects) {
+    if (!["林口", "A7"].includes(project.region)) continue;
     const source = project.region === "A7" ? a7 : linkou;
-    const rows = source.grouped.get(normalizeName(project.name)) || [];
+    const ambiguousName = payload.projects.filter((item) => item.city === project.city && item.district === project.district && normalizeName(item.name) === normalizeName(project.name)).length > 1;
+    const rows = ambiguousName ? [] : source.grouped.get(normalizeName(project.name)) || [];
     const sourceUrl = project.region === "A7" ? officialPage : linkouDatasetPage;
     if (rows.length) {
       project.price = summarize(
@@ -163,6 +167,7 @@ async function refreshPrices() {
     } else {
       project.price = null;
       project.priceEvidence = unmatchedEvidence(checkedAt, sourceUrl);
+      if (ambiguousName) { project.priceEvidence.status = "source-no-match"; project.priceEvidence.statusLabel = "同名建案待人工歸戶"; }
       project.dataCompleteness = Math.min(project.dataCompleteness || 70, 70);
       regionStats[project.region].unmatched += 1;
     }

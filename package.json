@@ -9,12 +9,15 @@
     "dev": "vinext dev",
     "build": "vinext build",
     "start": "vinext start",
-    "test": "npm run build && node --test tests/rendered-html.test.mjs",
+    "test": "npm run build && node --experimental-strip-types --test tests/*.test.mjs",
     "lint": "eslint app scripts tests --ignore-pattern dist --ignore-pattern .next",
     "data:update": "node scripts/update-all.mjs",
     "data:supply": "node scripts/build-regional-supply.mjs",
     "data:check": "node scripts/validate-data.mjs",
-    "db:generate": "drizzle-kit generate"
+    "db:generate": "drizzle-kit generate",
+    "data:snapshot": "node scripts/update-all.mjs --snapshot",
+    "typecheck": "tsc --noEmit --incremental false",
+    "types:generate": "npm run build && wrangler types --config dist/server/wrangler.json --include-env false types/worker-runtime.d.ts"
   },
   "dependencies": {
     "drizzle-orm": "0.45.2",
@@ -40,7 +43,7 @@
     "tailwindcss": "4.2.1",
     "typescript": "5.9.3",
     "vinext": "0.0.50",
-    "vite": "8.0.13",
+    "vite": "8.0.14",
     "wrangler": "4.92.0"
   },
   "type": "module"

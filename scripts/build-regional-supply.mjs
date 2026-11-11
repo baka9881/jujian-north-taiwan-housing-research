@@ -1,3 +1,4 @@
+import { regions as regionSettings } from "./regions.mjs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -41,11 +42,12 @@ const districts = Object.fromEntries(input.districts.map((record) => [
   normalizeRecord(record, record.period),
 ]));
 
-const regions = Object.fromEntries(Object.entries(input.regionMapping).map(([region, mapping]) => {
+const mappings = Object.fromEntries(regionSettings.map((region) => [region.label, { county: region.city, district: region.districts.length === 1 ? region.districts[0] : "", ...input.regionMapping[region.label] }]));
+const regions = Object.fromEntries(Object.entries(mappings).map(([region, mapping]) => {
   const districtKey = `${mapping.county}${mapping.district}`;
   const currentDistrict = districts[districtKey];
   const sourceRecord = currentDistrict?.period === input.latestPeriod ? currentDistrict : counties[mapping.county];
-  if (!sourceRecord) throw new Error(`${region} 找不到 ${mapping.county} 的區域供給資料`);
+  if (!sourceRecord) return [region, { region, requestedGeography: districtKey, geography: mapping.county, sourceLevel: "unavailable", scopeLabel: "資料待補", units: null, period: null, periodLabel: "尚未匯入同層級資料", quarterlyChange: null, annualChange: null, fallbackReason: "尚無可核對的區域供給資料", note: null }];
   const sourceLevel = currentDistrict?.period === input.latestPeriod ? "district" : "county";
   return [region, {
     region,
@@ -54,7 +56,7 @@ const regions = Object.fromEntries(Object.entries(input.regionMapping).map(([reg
     sourceLevel,
     scopeLabel: sourceLevel === "district" ? "行政區資料" : "縣市參考",
     fallbackReason: sourceLevel === "county"
-      ? `最新官方摘要未公布${mapping.district}確切戶數，因此顯示${mapping.county}層級。`
+      ? mapping.district ? `最新官方摘要未公布${mapping.district}確切戶數，因此顯示${mapping.county}層級。` : `顯示${mapping.county}全縣市資料，並非此分區或特定建案的剩餘戶數。`
       : null,
     units: sourceRecord.units,
     period: sourceRecord.period,

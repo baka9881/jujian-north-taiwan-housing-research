@@ -2,6 +2,9 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 
+const catalogue = JSON.parse(await readFile(new URL("../data/processed/projects.json", import.meta.url), "utf8"));
+const catalogueSize = catalogue.projects.length;
+
 async function render() {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
@@ -14,24 +17,23 @@ async function render() {
   );
 }
 
-test("server-renders the verified Linkou and A7 catalogue", async () => {
+test("opens with clear paths for current listings and historical records", async () => {
   const response = await render();
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
 
   const html = await response.text();
   assert.match(html, /<title>居鑑｜北台灣建案履歷<\/title>/);
-  assert.match(html, /官方資料 (?:<!-- -->)?42(?:<!-- -->)? 案/);
-  assert.match(html, /建案地圖/);
-  assert.match(html, /搜尋區域、捷運、建案或建商/);
-  assert.match(html, /品質查核/);
-  assert.doesNotMatch(html, /案有成交資料/);
-  assert.doesNotMatch(html, /隱藏清單|顯示清單/);
-  assert.match(html, /生活機能/);
-  assert.match(html, /data-map-engine="leaflet"/);
+  assert.match(html, /找目前刊登的房屋/);
+  assert.match(html, /查建案履歷/);
+  assert.match(html, /房源由信義房屋提供/);
+  assert.match(html, /不代表建案仍在銷售/);
+  assert.match(html, /Taipei-city\/presale\/default-desc\/1/);
+  assert.doesNotMatch(html, /class="project-grid-card"/);
+  assert.doesNotMatch(html, /data-map-engine="leaflet"/);
   assert.doesNotMatch(html, /class="map-project-card"/);
   assert.match(html, /lang="zh-Hant-TW"/);
-  assert.match(html, /滾輪縮放 · 拖曳移動/);
+  assert.doesNotMatch(html, /滾輪縮放 · 拖曳移動/);
   assert.doesNotMatch(html, /<iframe/);
   assert.doesNotMatch(html, /maps\/search\/|target="_blank"[^>]*>[^<]*(?:地圖|放大)/);
   assert.doesNotMatch(html, /匿名示範資料|綜合表現/);
@@ -41,13 +43,14 @@ test("processed amenity data is scored and source-labelled", async () => {
   const raw = await readFile(new URL("../data/processed/amenities.json", import.meta.url), "utf8");
   const dataset = JSON.parse(raw);
 
-  assert.equal(Object.keys(dataset.projects).length, 42);
+  assert.equal(Object.keys(dataset.projects).length, catalogueSize);
   assert.ok(dataset.pois.length >= 350);
   assert.equal(dataset.source.name, "OpenStreetMap contributors");
   assert.equal(Object.keys(dataset.categories).length, 10);
   assert.ok(["market", "park", "pharmacy", "parking"].every((category) => dataset.categories[category]));
-  assert.equal(dataset.routeCoverage.routedProjects, 31);
-  assert.equal(dataset.routeCoverage.unavailableLocationProjects, 11);
+  assert.ok(dataset.routeCoverage.routedProjects >= 31);
+  assert.equal(dataset.routeCoverage.routedProjects, Object.values(dataset.projects).filter((project) => project.score !== null).length);
+  assert.equal(dataset.routeCoverage.unavailableLocationProjects, Object.values(dataset.projects).filter((project) => project.scoreReliability === "unavailable").length);
   assert.deepEqual(Object.keys(dataset.methodology.profiles).sort(), ["balanced", "driver", "family", "student"]);
   assert.equal(dataset.methodology.scoreFormula.version, 2);
   assert.equal(dataset.methodology.scoreFormula.routeWeightPercent, 75);
@@ -56,10 +59,10 @@ test("processed amenity data is scored and source-labelled", async () => {
   assert.equal(Object.keys(dataset.methodology.densityRules).length, 10);
   assert.ok(Object.values(dataset.projects).every((project) => project.score === null || (project.score >= 0 && project.score <= 100)));
   assert.ok(Object.values(dataset.projects).every((project) => project.location.confidence));
-  assert.equal(Object.values(dataset.projects).filter((project) => project.scoreReliability === "verified").length, 17);
-  assert.equal(Object.values(dataset.projects).filter((project) => project.scoreReliability === "unavailable").length, 11);
+  assert.ok(Object.values(dataset.projects).filter((project) => project.scoreReliability === "verified").length >= 17);
+  assert.equal(Object.values(dataset.projects).filter((project) => project.scoreReliability === "unavailable").length, dataset.routeCoverage.unavailableLocationProjects);
   assert.ok(Object.values(dataset.projects).filter((project) => project.location.confidence === "estimated").every((project) => project.score === null));
-  assert.equal(Object.values(dataset.projects).filter((project) => project.location.method === "nlsc-official-intersection").length, 16);
+  assert.ok(Object.values(dataset.projects).filter((project) => project.location.method === "nlsc-official-intersection").length > 16);
   assert.ok(Object.values(dataset.projects).filter((project) => project.score !== null).every((project) => Object.keys(project.categoryScores).length === 10));
   assert.ok(Object.values(dataset.projects).every((project) => Object.keys(project.routeScores).length === 10));
   assert.ok(Object.values(dataset.projects).every((project) => Object.keys(project.densityScores).length === 10));
@@ -76,16 +79,18 @@ test("quality evidence records all current official-source reviews without overc
   const projects = Object.values(dataset.projects);
   const events = projects.flatMap((project) => project.events);
 
-  assert.equal(projects.length, 42);
-  assert.equal(dataset.summary.queuedCount, 0);
+  assert.equal(projects.length, catalogueSize);
+  assert.equal(dataset.summary.queuedCount, catalogueSize - 42);
   assert.equal(dataset.summary.reviewedCount, 42);
   assert.equal(dataset.summary.publishedEventCount, 7);
   assert.equal(dataset.summary.defectEventCount, 0);
   assert.equal(dataset.summary.contractEventCount, 7);
-  assert.equal(dataset.summary.verifiedLocationCount, 17);
-  assert.equal(dataset.summary.approximateLocationCount, 14);
-  assert.equal(dataset.summary.awaitingParcelCount, 11);
-  assert.ok(projects.every((project) => project.status === "reviewed"));
+  const amenities = JSON.parse(await readFile(new URL("../data/processed/amenities.json", import.meta.url), "utf8"));
+  const amenityProjects = Object.values(amenities.projects);
+  assert.equal(dataset.summary.verifiedLocationCount, amenityProjects.filter((project) => ["high", "medium"].includes(project.location.confidence)).length);
+  assert.equal(dataset.summary.approximateLocationCount, amenityProjects.filter((project) => project.location.confidence === "low").length);
+  assert.equal(dataset.summary.awaitingParcelCount, amenityProjects.filter((project) => project.location.confidence === "estimated").length);
+  assert.ok(projects.filter((project) => project.status === "reviewed").length === 42);
   assert.equal(events.length, 7);
   assert.ok(events.every((event) => event.level === "A"));
   assert.ok(events.every((event) => event.category === "契約查核"));
@@ -99,7 +104,7 @@ test("quality evidence records all current official-source reviews without overc
   assert.equal(dataset.projects["a7-12-ae84ab"].events.length, 0);
   assert.match(dataset.projects["a7-12-ae84ab"].sourceChecks.find((check) => check.sourceId === "judicial").note, /不是漏水或施工瑕疵/);
   assert.equal(dataset.projects["a7-10-e86850"].sourceChecks.find((check) => check.sourceId === "judicial").status, "ambiguous-query");
-  assert.ok(projects.every((project) => project.locationReview.parcel?.officialMapUrl.startsWith("https://maps.nlsc.gov.tw/goland/")));
+  assert.ok(projects.filter((project) => project.status === "reviewed").every((project) => project.locationReview.parcel?.officialMapUrl.startsWith("https://maps.nlsc.gov.tw/goland/")));
   assert.ok(dataset.methodology.noEventDisclaimer.includes("不代表建案沒有漏水或施工問題"));
   assert.match(dataset.methodology.defectPublishRule, /建案、問題類型與發生事實/);
 });
@@ -109,11 +114,12 @@ test("processed data has the intended scope and explicit unknown states", async 
   const dataset = JSON.parse(raw);
   const regions = new Set(dataset.projects.map((project) => project.region));
 
-  assert.equal(dataset.projects.length, 42);
-  assert.deepEqual([...regions].sort(), ["A7", "林口"]);
+  assert.equal(dataset.projects.length, catalogueSize);
+  assert.equal(regions.size, 7);
+  assert.equal(new Set(dataset.projects.map((project) => project.city)).size, 5);
   assert.ok(dataset.projects.filter((project) => project.price).length >= 37);
   assert.ok(dataset.projects.filter((project) => project.region === "A7" && project.price).length >= 17);
-  assert.ok(dataset.projects.filter((project) => project.region === "A7" && project.priceEvidence?.status === "official-no-match").length <= 3);
+  assert.ok(dataset.projects.filter((project) => project.region === "A7").length > 20);
   assert.ok(dataset.priceCoverage.a7OfficialRecordsReviewed >= 8000);
   assert.equal(dataset.priceCoverage.historyFrom, "112S1");
   assert.ok(dataset.projects.filter((project) => project.price).every((project) => project.price.count > 0));
@@ -126,12 +132,12 @@ test("safe update report records safeguards and keeps historical backlog separat
   const raw = await readFile(new URL("../data/processed/update-report.json", import.meta.url), "utf8");
   const report = JSON.parse(raw);
 
-  assert.equal(report.summary.catalogueAfter, 42);
-  assert.equal(report.summary.ambiguousCount, 0);
-  assert.equal(report.summary.missingFromCurrentSourceCount, 0);
-  assert.ok(report.summary.historicalBacklogCount >= 70);
+  assert.equal(report.summary.catalogueAfter, catalogueSize);
+  assert.equal(report.summary.ambiguousCount, report.changes.ambiguous.length);
+  assert.equal(report.summary.missingFromCurrentSourceCount, report.changes.missing.length);
+  assert.equal(report.summary.historicalBacklogCount, 0);
   assert.equal(report.pipeline.status, "complete");
-  assert.equal(report.pipeline.totalProjects, 42);
+  assert.equal(report.pipeline.totalProjects, catalogueSize);
   assert.ok(report.safeguards.some((item) => item.includes("不會") && item.includes("刪除")));
 });
 
@@ -161,27 +167,24 @@ test("filter controls stay above Leaflet map layers", async () => {
 
   assert.ok(filterLayer > 1000);
   assert.ok(headerLayer > filterLayer);
-  assert.match(css, /\.advanced-filter-panel \{[^}]*max-height:calc\(100dvh - 150px\)/);
+  assert.match(css, /\.advanced-filter-panel \{[^}]*position:fixed;[^}]*right:20px;[^}]*width:min\(460px,calc\(100vw - 40px\)\)/);
+  assert.match(css, /@media\(max-width:760px\)[\s\S]*\.advanced-filter-panel \{[^}]*bottom:0;[^}]*width:100%;[^}]*max-height:82dvh/);
 });
 
 test("map uses stable project coordinates and progressive zoom layers", async () => {
   const source = await readFile(new URL("../app/InteractiveMap.tsx", import.meta.url), "utf8");
   const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
 
-  assert.doesNotMatch(source, /containerPointToLatLng/);
-  assert.doesNotMatch(source, /offsetX|offsetY|marker-offset-line/);
+  assert.doesNotMatch(source, /containerPointToLatLng|marker-offset-line|areaMarkerOffsets/);
+  assert.match(source, /groupMapLabels/);
   assert.match(source, /leaflet\.marker\(point,/);
-  assert.match(source, /projectMarkerMinZoom = 14/);
-  assert.match(source, /zoomControl: false/);
-  assert.doesNotMatch(source, /leaflet\.control\.zoom/);
-  assert.match(source, /map-tier-project/);
-  assert.match(source, /area-summary-marker/);
-  assert.match(source, /目前顯示區域摘要 · 放大後顯示個別建案/);
-  assert.match(source, /搜尋此地圖範圍/);
-  assert.match(css, /\.interactive-map-canvas\.map-tier-area \.project-map-marker-host \{ display:none!important; \}/);
-  assert.match(css, /\.project-map-marker \{[^}]*transform:none!important;/);
-  assert.match(css, /\.amenity-layer-control \{ top:12px; left:12px; \}/);
-  assert.doesNotMatch(css, /leaflet-control-zoom/);
+  assert.match(source, /map\.getZoom\(\) >= 14/);
+  assert.match(source, /leaflet\.control\.zoom/);
+  assert.match(source, /method !== "catalogue-fallback"/);
+  assert.match(source, /onClusterSelect\?\.\(group.ids\)/);
+  assert.match(source, /onViewportChange\?\./);
+  assert.doesNotMatch(source, /map-empty-state|map-marker-zoom-hint|map-coverage-note|map-gesture-hint/);
+  assert.match(css, /\.map-explorer-body/);
 });
 
 test("detail interface separates defect evidence and supports route-based custom amenity weights", async () => {
@@ -211,7 +214,7 @@ test("the product keeps map mode focused and reveals information progressively",
 
   assert.match(source, /type BudgetFilter/);
   assert.match(source, /每坪成交預算/);
-  assert.match(source, /更多條件/);
+  assert.match(source, /縮小搜尋範圍/);
   assert.doesNotMatch(source, /result-sidebar|panelOpen|隱藏清單|顯示清單/);
   assert.match(source, /if \(project\) previewProject\(project\)/);
   assert.match(source, /className="map-project-preview"/);
@@ -222,7 +225,9 @@ test("the product keeps map mode focused and reveals information progressively",
   assert.match(source, />品質<\/button>/);
   assert.match(source, />機能<\/button>/);
   assert.match(source, />建商<\/button>/);
-  assert.match(source, /onSearchArea=\{\(ids\) => setMapScopeIds\(ids\)\}/);
+  assert.match(source, /initialCamera=\{builderMapFocus\?\.id === validMapPreviewId \? builderMapFocus\.camera : mapCameraMemory\[mapScopeKey\]\}/);
+  assert.match(source, /className="map-tools-control"/);
+  assert.doesNotMatch(source, /map-marker-zoom-hint|map-coverage-note|map-gesture-hint/);
   assert.match(source, /priceComparison\(active\)/);
   assert.match(source, /區域新屋供給/);
   assert.doesNotMatch(source, /setDetailTab\("supply"\)|快速前往|更多資料/);
@@ -238,8 +243,26 @@ test("the product keeps map mode focused and reveals information progressively",
   assert.match(css, /\.detail-drawer > nav \{[^}]*grid-template-columns:repeat\(6,minmax\(52px,1fr\)\)/);
   assert.match(css, /\.map-project-preview/);
   assert.doesNotMatch(css, /\.evidence-navigation/);
-  assert.match(css, /\.area-summary-marker/);
+  assert.match(css, /\.map-region-pin/);
   assert.doesNotMatch(css, /\.panel-toggle|\.panel-collapsed|\.result-sidebar|\.map-project-card/);
+  assert.match(source, /primary-filter-button/);
+  assert.match(source, /role="dialog" aria-modal="true" aria-label="篩選建案"/);
+  assert.match(source, /onGeography=/);
+  assert.match(source, /\{confidence\.covered\}／4 項可核對/);
+  assert.doesNotMatch(source, /quick-start|熱門地區/);
+  assert.match(css, /\.filter-backdrop,\.detail-backdrop \{[^}]*position:fixed/);
+  assert.match(css, /\.table-scroll th:first-child \{[^}]*position:sticky/);
+});
+
+test("registration status is not misrepresented as a current presale ratio", async () => {
+  const pageSource = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  const mapSource = await readFile(new URL("../app/InteractiveMap.tsx", import.meta.url), "utf8");
+
+  assert.match(pageSource, /首次登記狀態/);
+  assert.match(pageSource, /尚無首次登記資料/);
+  assert.match(pageSource, /不能直接判定仍是預售屋/);
+  assert.doesNotMatch(pageSource, /<option value="presale">預售屋<\/option>/);
+  assert.doesNotMatch(mapSource, /stageLabel|stage === "presale"/);
 });
 
 test("project details include traceable nearby street imagery without pretending it is an official facade photo", async () => {

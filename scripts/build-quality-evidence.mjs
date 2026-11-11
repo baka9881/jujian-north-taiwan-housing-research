@@ -47,7 +47,7 @@ function locationReview(amenity, buildingLand) {
     status,
     label: status === "verified" ? "已有可信定位" : status === "approximate" ? "道路位置估算" : "等待地號核對",
     method: amenity.location.method,
-    parcel: parcelReference(buildingLand),
+    parcel: amenity.location.method === "region-center" ? null : parcelReference(buildingLand),
   };
 }
 
@@ -64,7 +64,7 @@ function normalizeEvent(event, project) {
     repairStatus: eventType === "defect" ? event.repairStatus || "資料未載明" : null,
     recurrence: eventType === "defect" ? event.recurrence || "資料未載明" : null,
     caseCount,
-    casesPer100Households: eventType === "defect" && caseCount !== null
+    casesPer100Households: eventType === "defect" && caseCount !== null && project.households > 0
       ? Number((caseCount / project.households * 100).toFixed(2))
       : null,
   };

@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 
-export function parseCsv(text) {
+export function parseCsvTable(text) {
   const rows = [];
   let row = [];
   let field = "";
@@ -32,14 +32,19 @@ export function parseCsv(text) {
       field += character;
     }
   }
+  if (quoted) throw new Error("CSV 引號未閉合，可能為截斷下載");
   if (field || row.length) {
     row.push(field.replace(/\r$/u, ""));
     rows.push(row);
   }
 
   const [headers = [], ...values] = rows;
-  return values
-    .filter((cells) => cells.some(Boolean))
+  return { headers, rows: values.filter((cells) => cells.some(Boolean)) };
+}
+
+export function parseCsv(text) {
+  const { headers, rows } = parseCsvTable(text);
+  return rows
     .map((cells) => Object.fromEntries(headers.map((header, index) => [header, cells[index] ?? ""])))
     .filter((record) => !["TOWN", "The villages and towns urban district"].includes(record.鄉鎮市區));
 }
@@ -56,6 +61,11 @@ export function rocToIso(value = "") {
   const digits = value.replace(/\D/gu, "");
   if (digits.length < 7) return null;
   const year = Number(digits.slice(0, -4)) + 1911;
+  if (digits.length !== 7) return null;
+  const month = Number(digits.slice(-4, -2));
+  const day = Number(digits.slice(-2));
+  const date = new Date(Date.UTC(year, month - 1, day));
+  if (date.getUTCFullYear() !== year || date.getUTCMonth() !== month - 1 || date.getUTCDate() !== day) return null;
   return `${String(year).padStart(4, "0")}-${digits.slice(-4, -2)}-${digits.slice(-2)}`;
 }
 
